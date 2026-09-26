@@ -67,6 +67,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .fab{width:42px;height:42px;border-radius:12px;background:var(--surface);box-shadow:var(--sh-1);display:grid;place-items:center;color:var(--muted)}
 .fab svg{width:19px;height:19px}
 .fab.on{color:var(--accent)}
+.fab.busy svg{animation:buscando 1s ease-in-out infinite}
+@keyframes buscando{50%{opacity:.35}}
 .pildora{position:fixed;left:50%;top:calc(var(--st) + 62px);transform:translateX(-50%);z-index:460;background:var(--surface);color:var(--accent);padding:9px 14px;border-radius:999px;font:700 13px/1 var(--body);box-shadow:var(--sh-2);display:flex;gap:7px;align-items:center;white-space:nowrap}
 .pildora svg{width:14px;height:14px}
 .toast{position:fixed;left:50%;top:calc(var(--st) + 62px);transform:translateX(-50%);z-index:700;background:var(--ink);color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;max-width:calc(100% - 32px);box-shadow:var(--sh-2)}
@@ -710,19 +712,50 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     if (marcaYo) marcaYo.setLatLng(p);
     else marcaYo = L.marker(p, { icon: L.divIcon({ className: "divpin", html: '<div class="yo"></div>', iconSize: [0, 0] }), interactive: false, zIndexOffset: 9000 }).addTo(mapa);
   }
+  // ---------- ubicación: rápida al abrir, precisa después y siguiéndote mientras la app está abierta ----------
+  const geo = navigator.geolocation;
+  let vigia = null, pendienteCentrar = true, ocultaDesde = 0;
+  function aplicarPos(pos, forzar) {
+    const p = [pos.coords.latitude, pos.coords.longitude];
+    st.yo = p; ponerYo(p); $("btnYo").classList.remove("busy");
+    const umbral = Math.max(.4, st.radio * .08);
+    const libre = !st.manual && !st.tocado && !st.sel;
+    if (forzar || pendienteCentrar || (libre && dist(st.centro, p) > umbral)) {
+      pendienteCentrar = false;
+      st.centro = p; st.manual = false; grabar("centro", p);
+      $("btnYo").classList.add("on"); $("buscarAqui").hidden = true;
+      if (forzar) cerrarDetalle();
+      refrescar(true);
+    } else if (st.cargado) pintarFavs();
+  }
+  function errorPos(err, avisar) {
+    $("btnYo").classList.remove("busy");
+    if (err.code === 1) toast("Sin permiso de ubicación. Actívalo en Ajustes → Privacidad → Localización → Sitios web de Safari", 5000);
+    else if (avisar) toast("No se pudo obtener tu ubicación. Prueba otra vez");
+  }
+  function seguir() {
+    if (!geo || vigia != null) return;
+    vigia = geo.watchPosition(pos => aplicarPos(pos, false), err => { if (err.code === 1) errorPos(err, false); }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
+  }
+  function parar() { if (vigia != null) { geo.clearWatch(vigia); vigia = null; } }
   function localizar(avisar) {
-    if (!navigator.geolocation) { if (avisar) toast("Este navegador no permite la ubicación"); return; }
-    navigator.geolocation.getCurrentPosition(pos => {
-      st.yo = [pos.coords.latitude, pos.coords.longitude]; ponerYo(st.yo);
-      if (!st.manual || avisar) {
-        st.centro = st.yo; st.manual = false; grabar("centro", st.centro);
-        $("btnYo").classList.add("on"); $("buscarAqui").hidden = true; cerrarDetalle(); refrescar(true);
-      }
-    }, err => {
-      if (avisar || err.code === 1) toast(err.code === 1 ? "Activa la ubicación para ver lo que tienes cerca" : "No se pudo obtener tu ubicación");
-    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    if (!geo) { if (avisar) toast("Este navegador no permite la ubicación"); return; }
+    $("btnYo").classList.add("busy");
+    if (avisar) { st.tocado = false; st.manual = false; pendienteCentrar = true; }
+    // 1º: posición rápida (aunque sea aproximada) para no hacerte esperar
+    geo.getCurrentPosition(pos => aplicarPos(pos, avisar), () => {}, { enableHighAccuracy: false, maximumAge: avisar ? 0 : 120000, timeout: 4000 });
+    // 2º: posición precisa por GPS
+    geo.getCurrentPosition(pos => aplicarPos(pos, false), err => errorPos(err, avisar), { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 });
+    seguir();
   }
   $("btnYo").onclick = () => localizar(true);
+  // Al volver a la app (iPhone la deja dormida en segundo plano) se vuelve a ubicar
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { ocultaDesde = Date.now(); parar(); return; }
+    if (Date.now() - ocultaDesde > 60000) { st.manual = false; st.tocado = false; pendienteCentrar = true; if (st.sel) cerrarDetalle(); }
+    localizar(false);
+  });
+  addEventListener("pageshow", e => { if (e.persisted) { pendienteCentrar = true; localizar(false); } });
 
   // ---------- arranque (el mapa se ve desde el primer momento) ----------
   ponerSnap(1);
