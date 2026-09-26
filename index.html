@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Diésel Cerca</title>
-<meta name="theme-color" content="#0C1115">
+<meta name="theme-color" content="#0B1014">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Diésel Cerca">
 <link rel="manifest" href="manifest.webmanifest">
@@ -13,552 +14,668 @@
 <link rel="apple-touch-icon" href="icono-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
-  --bg:#EEF1F3; --surface:#FFFFFF; --surface-2:#F5F7F9; --ink:#11181D; --muted:#5A6770; --line:#D8DFE4;
-  --accent:#1F4FA3; --accent-ink:#FFFFFF; --accent-soft:#E3EBF8;
-  --good:#128553; --mid:#9A6A00; --bad:#C2323A;
-  --totem:#0F151A; --led-good:#3BE08F; --led-mid:#FFC24A; --led-bad:#FF6468; --led-dim:#7E8B94;
-  --shadow:0 10px 30px rgba(17,24,29,.16), 0 2px 6px rgba(17,24,29,.08);
+  --bg:#EDF0F2; --surface:#FFFFFF; --surface-2:#F3F5F7; --surface-3:#E7EBEE;
+  --ink:#0F161B; --ink-2:#2B363E; --muted:#66737C; --faint:#98A3AB; --line:#E1E6EA;
+  --accent:#1E5BD8; --accent-ink:#FFFFFF; --accent-soft:#E6EEFC;
+  --good:#0E8A55; --good-soft:#E3F4EC; --mid:#A46A00; --bad:#C73239; --bad-soft:#FBE8E9;
+  --totem:#0D1318; --led-good:#39E08E; --led-mid:#FFC247; --led-bad:#FF6166; --led-dim:#76838C;
+  --glass:rgba(255,255,255,.86);
+  --shadow-1:0 1px 2px rgba(15,22,27,.06),0 4px 14px rgba(15,22,27,.08);
+  --shadow-2:0 18px 50px rgba(15,22,27,.18),0 3px 10px rgba(15,22,27,.08);
   --display:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
-  --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0C1115; --surface:#151C22; --surface-2:#1B242B; --ink:#E8EDF0; --muted:#93A1AB; --line:#27323B;
-    --accent:#7AA4FF; --accent-ink:#0C1115; --accent-soft:#1B2A45;
-    --good:#3BD08A; --mid:#F2B33D; --bad:#FF6B6F;
-    --shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4);
+    --bg:#0B1014; --surface:#12191E; --surface-2:#182127; --surface-3:#1F2A31;
+    --ink:#EAF0F3; --ink-2:#C9D3D9; --muted:#8C99A2; --faint:#5F6C75; --line:#222D34;
+    --accent:#6E9DFF; --accent-ink:#0B1014; --accent-soft:#18243A;
+    --good:#38D087; --good-soft:#12291F; --mid:#F2B33D; --bad:#FF6B70; --bad-soft:#2E171A;
+    --glass:rgba(18,25,30,.84);
+    --shadow-1:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35);
+    --shadow-2:0 18px 50px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0C1115; --surface:#151C22; --surface-2:#1B242B; --ink:#E8EDF0; --muted:#93A1AB; --line:#27323B;
-  --accent:#7AA4FF; --accent-ink:#0C1115; --accent-soft:#1B2A45;
-  --good:#3BD08A; --mid:#F2B33D; --bad:#FF6B6F;
-  --shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4);
+  --bg:#0B1014; --surface:#12191E; --surface-2:#182127; --surface-3:#1F2A31;
+  --ink:#EAF0F3; --ink-2:#C9D3D9; --muted:#8C99A2; --faint:#5F6C75; --line:#222D34;
+  --accent:#6E9DFF; --accent-ink:#0B1014; --accent-soft:#18243A;
+  --good:#38D087; --good-soft:#12291F; --mid:#F2B33D; --bad:#FF6B70; --bad-soft:#2E171A;
+  --glass:rgba(18,25,30,.84);
+  --shadow-1:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35);
+  --shadow-2:0 18px 50px rgba(0,0,0,.55),0 3px 10px rgba(0,0,0,.4);
   color-scheme:dark;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.4 var(--body);-webkit-font-smoothing:antialiased;overflow:hidden}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.num{font-family:var(--display);font-variant-numeric:tabular-nums}
+body{background:var(--bg);color:var(--ink);font:15px/1.4 var(--body);-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tn{font-family:var(--display);font-variant-numeric:tabular-nums}
+.cap{font:600 10.5px/1 var(--display);letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
 
+/* ---------- mapa ---------- */
 #mapa{position:fixed;inset:0;background:var(--bg);z-index:0}
 .leaflet-container{font:inherit;background:var(--bg)}
-.leaflet-control-attribution{font-size:10px;background:color-mix(in srgb,var(--surface) 80%,transparent)!important;color:var(--muted)}
-.leaflet-control-attribution a{color:var(--muted)}
+.leaflet-control-attribution{font-size:9.5px;background:transparent!important;color:var(--faint);text-shadow:0 0 3px var(--bg)}
+.leaflet-control-attribution a{color:var(--faint)}
+.leaflet-bottom{bottom:var(--sheet-h,0px);transition:bottom .35s cubic-bezier(.2,.8,.2,1)}
+.divpin{background:none;border:0}
 
-/* Barra superior */
-.barra{position:fixed;left:0;right:0;top:0;z-index:500;padding:calc(var(--safe-top) + 10px) 12px 0;display:flex;gap:8px;align-items:flex-start;pointer-events:none}
-.marca{pointer-events:auto;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 12px 8px 8px;box-shadow:var(--shadow);min-width:0}
-.marca .logo{width:34px;height:34px;border-radius:9px;background:var(--totem);display:grid;place-items:center;flex:none}
-.marca h1{margin:0;font:700 19px/1 var(--display);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
-.marca .act{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.producto{pointer-events:auto;margin-left:auto;display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;box-shadow:var(--shadow);flex:none}
-.producto button{border:0;background:transparent;padding:8px 11px;border-radius:9px;font:600 14px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
-.producto button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+/* ---------- barra superior ---------- */
+.top{position:fixed;top:0;left:0;right:0;z-index:500;padding:calc(var(--st) + 10px) 12px 0;display:flex;gap:8px;align-items:center;pointer-events:none}
+.top > *{pointer-events:auto}
+.marca{display:flex;align-items:center;gap:10px;min-width:0;flex:1;background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--line);border-radius:16px;padding:7px 12px 7px 7px;box-shadow:var(--shadow-1)}
+.logo{width:36px;height:36px;border-radius:11px;background:var(--totem);display:grid;place-items:center;flex:none}
+.marca-txt{min-width:0}
+.marca-txt b{display:block;font:700 17px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.marca-txt > span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.vivo{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:5px;vertical-align:1px;box-shadow:0 0 0 3px var(--good-soft)}
+.seg{display:flex;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:14px;padding:3px;box-shadow:var(--shadow-1);flex:none}
+.seg button{padding:9px 12px;border-radius:11px;font:700 13.5px/1 var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 
-/* Botones flotantes */
-.flotantes{position:fixed;right:12px;z-index:450;display:flex;flex-direction:column;gap:8px;bottom:calc(var(--sheet-h,300px) + 12px);transition:bottom .3s ease}
-.fab{width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center}
-.fab svg{width:22px;height:22px}
-.fab.activo{color:var(--accent)}
-.buscar-aqui{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--safe-top) + 72px);z-index:450;border:0;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font:600 14px/1 var(--body);box-shadow:var(--shadow)}
+/* ---------- controles del mapa ---------- */
+.fabs{position:fixed;right:12px;z-index:450;display:flex;flex-direction:column;gap:8px;bottom:calc(var(--sheet-h,300px) + 12px);transition:bottom .35s cubic-bezier(.2,.8,.2,1)}
+.fab{width:44px;height:44px;border-radius:14px;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--line);box-shadow:var(--shadow-1);display:grid;place-items:center;color:var(--ink-2)}
+.fab svg{width:20px;height:20px}
+.fab.on{color:var(--accent)}
+.pildora{position:fixed;left:50%;top:calc(var(--st) + 72px);transform:translateX(-50%);z-index:460;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font:600 13.5px/1 var(--body);box-shadow:var(--shadow-2);display:flex;gap:8px;align-items:center;white-space:nowrap}
+.pildora svg{width:15px;height:15px}
+.toast{position:fixed;left:50%;top:calc(var(--st) + 72px);transform:translateX(-50%);z-index:700;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:10px 14px;border-radius:12px;font-size:13.5px;max-width:calc(100% - 32px);box-shadow:var(--shadow-2)}
 
-/* Hoja inferior */
-.hoja{position:fixed;left:0;right:0;bottom:0;z-index:600;background:var(--surface);border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;height:var(--sheet-h,300px);transition:height .3s ease;padding-bottom:var(--safe-bottom)}
-.tirador{border:0;background:transparent;padding:10px 0 4px;display:grid;place-items:center;flex:none}
-.tirador span{width:40px;height:5px;border-radius:3px;background:var(--line)}
-.cabecera{padding:4px 16px 12px;flex:none;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--line)}
+/* ---------- marcadores ---------- */
+.pin{position:relative;display:inline-flex;align-items:center;gap:5px;transform:translate(-50%,calc(-100% - 6px));background:var(--totem);border-radius:9px;padding:5px 7px 4px 6px;box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.07);white-space:nowrap;transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.pin::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--totem)}
+.pin i{width:6px;height:6px;border-radius:50%;background:var(--led-mid);box-shadow:0 0 6px var(--led-mid)}
+.pin b{font:700 15px/1 var(--display);font-variant-numeric:tabular-nums;color:var(--led-mid);letter-spacing:.01em}
+.pin.g i{background:var(--led-good);box-shadow:0 0 6px var(--led-good)} .pin.g b{color:var(--led-good)}
+.pin.r i{background:var(--led-bad);box-shadow:0 0 6px var(--led-bad)} .pin.r b{color:var(--led-bad)}
+.pin .mejor{position:absolute;left:50%;top:-15px;transform:translateX(-50%);font:700 9px/1 var(--display);letter-spacing:.14em;color:#0D1318;background:var(--led-good);padding:3px 5px 2px;border-radius:4px}
+.pin.sel{transform:translate(-50%,calc(-100% - 6px)) scale(1.25);box-shadow:0 0 0 2px #fff,0 8px 22px rgba(0,0,0,.45)}
+.punto{width:12px;height:12px;border-radius:50%;background:var(--led-mid);border:2.5px solid var(--totem);transform:translate(-50%,-50%);box-shadow:0 1px 5px rgba(0,0,0,.45)}
+.punto.g{background:var(--led-good)} .punto.r{background:var(--led-bad)}
+.yo{width:20px;height:20px;border-radius:50%;background:#2E6BFF;border:3.5px solid #fff;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.35);animation:latido 2.2s infinite}
+@keyframes latido{0%{box-shadow:0 0 0 0 rgba(46,107,255,.45),0 2px 8px rgba(0,0,0,.35)}70%{box-shadow:0 0 0 18px rgba(46,107,255,0),0 2px 8px rgba(0,0,0,.35)}100%{box-shadow:0 0 0 0 rgba(46,107,255,0),0 2px 8px rgba(0,0,0,.35)}}
 
-.mejor{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;border:0;background:transparent;text-align:left;padding:0}
-.totem{background:var(--totem);border-radius:12px;padding:8px 12px 7px;min-width:112px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-.totem .etq{font:600 10px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--led-dim)}
-.totem .precio{font:700 38px/1 var(--display);color:var(--led-good);letter-spacing:.01em;text-shadow:0 0 14px color-mix(in srgb,var(--led-good) 45%,transparent);margin-top:3px}
-.totem .precio small{font-size:17px;color:var(--led-dim);text-shadow:none;margin-left:2px}
-.mejor .info{min-width:0}
-.mejor .eyebrow{font:600 11px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--good)}
-.mejor .nombre{font:700 21px/1.1 var(--display);text-transform:uppercase;letter-spacing:.01em;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mejor .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ---------- hoja ---------- */
+.hoja{position:fixed;left:0;right:0;bottom:0;z-index:600;height:var(--sheet-h,300px);background:var(--surface);border-radius:24px 24px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;transition:height .35s cubic-bezier(.2,.8,.2,1);padding-bottom:var(--sb);will-change:height}
+.hoja.arrastrando{transition:none}
+.asa{flex:none;padding:9px 0 3px;display:grid;place-items:center;touch-action:none;cursor:grab}
+.asa span{width:38px;height:5px;border-radius:3px;background:var(--surface-3)}
+.vista{flex:1;min-height:0;display:flex;flex-direction:column}
+.vista[hidden]{display:none!important}
+.cab{flex:none;padding:2px 16px 12px;display:flex;flex-direction:column;gap:14px;touch-action:none}
 
-.resumen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.dato{background:var(--surface-2);border-radius:10px;padding:8px 10px}
-.dato .k{font:600 10.5px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.dato .v{font:700 20px/1.1 var(--display);margin-top:4px;font-variant-numeric:tabular-nums}
-.dato .v.ahorro{color:var(--good)}
+.titulo-zona{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.titulo-zona h2{margin:0;font:700 22px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.titulo-zona .n{font-size:12.5px;color:var(--muted);white-space:nowrap}
 
-.controles{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
-.controles::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;font:500 13.5px/1 var(--body);color:var(--ink);white-space:nowrap}
-.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
-.sep{flex:none;width:1px;background:var(--line);margin:4px 2px}
+/* tarjeta de la mejor */
+.mejor-card{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:18px;padding:10px 12px 10px 10px;text-align:left;width:100%}
+.totem{background:var(--totem);border-radius:13px;padding:8px 11px 7px;min-width:104px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 -12px 20px rgba(57,224,142,.05)}
+.totem .cap{font-size:9.5px;color:var(--led-dim)}
+.totem .p{font:700 36px/1 var(--display);color:var(--led-good);text-shadow:0 0 16px rgba(57,224,142,.4);margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.totem .p small{font-size:15px;color:var(--led-dim);text-shadow:none;margin-left:2px;font-weight:600}
+.mejor-card .info{min-width:0}
+.mejor-card .cap{color:var(--good)}
+.mejor-card .nom{font:700 19px/1.1 var(--display);text-transform:uppercase;letter-spacing:.02em;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mejor-card .sub{font-size:12.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ir-mini{width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.ir-mini svg{width:18px;height:18px}
 
-.lista{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:4px 0 16px;margin:0;list-style:none}
-.fila{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);cursor:pointer;background:transparent}
-.fila:hover{background:var(--surface-2)}
-.fila.sel{background:var(--accent-soft)}
-.fila .pos{font:600 15px/1 var(--display);color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
-.fila .nom{font:600 16px/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fila .dir{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fila .meta{display:flex;gap:8px;align-items:center;margin-top:3px;font-size:12px;color:var(--muted)}
-.badge{font:600 10.5px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;padding:3px 6px;border-radius:5px}
-.badge.abierta{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
-.badge.cerrada{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+/* distribución */
+.dist{display:flex;flex-direction:column;gap:8px}
+.dist-top{display:flex;justify-content:space-between;align-items:baseline}
+.dist-top .ah{font-size:12.5px;color:var(--muted)}
+.dist-top .ah b{color:var(--good);font:700 15px/1 var(--display);font-variant-numeric:tabular-nums}
+.hist{position:relative;height:40px;display:flex;align-items:flex-end;gap:2px}
+.hist i{flex:1;border-radius:3px 3px 1px 1px;min-height:3px;opacity:.9}
+.hist .media{position:absolute;top:-2px;bottom:-4px;width:0;border-left:1.5px dashed var(--ink-2)}
+.hist .media-x{position:absolute;top:-15px;left:50%;transform:translateX(-50%);font:600 9.5px/1 var(--display);letter-spacing:.1em;color:var(--ink-2);white-space:nowrap;background:var(--surface);padding:0 3px}
+.escala{display:flex;justify-content:space-between;font:600 13px/1 var(--display);font-variant-numeric:tabular-nums}
+.escala .a{color:var(--good)} .escala .m{color:var(--muted)} .escala .z{color:var(--bad)}
+
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px;touch-action:pan-x}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 12px;font:600 13px/1 var(--body);color:var(--ink-2);white-space:nowrap;transition:background .2s,border-color .2s,color .2s}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:6px;vertical-align:1px}
+.sep{flex:none;width:1px;background:var(--line);margin:5px 2px}
+
+.lista{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0;padding:0 0 20px;list-style:none;border-top:1px solid var(--line)}
+.fila{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer}
+.fila:active{background:var(--surface-2)}
+@media (hover:hover){.fila:hover{background:var(--surface-2)}}
+.mono{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font:700 15px/1 var(--display);letter-spacing:.02em;color:#fff;position:relative;flex:none}
+.mono .rk{position:absolute;right:-5px;bottom:-5px;min-width:18px;height:18px;border-radius:9px;background:var(--surface);color:var(--ink-2);border:1px solid var(--line);font:700 10.5px/16px var(--display);text-align:center;padding:0 4px;font-variant-numeric:tabular-nums}
+.fila .nom{font:700 16.5px/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fila .dir{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.fila .meta{display:flex;gap:8px;align-items:center;margin-top:5px;font-size:12px;color:var(--muted)}
+.fila .meta .km{font:600 13px/1 var(--display);font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.est{font:700 10px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;padding:3px 6px 2px;border-radius:5px}
+.est.ab{background:var(--good-soft);color:var(--good)} .est.ce{background:var(--bad-soft);color:var(--bad)}
 .fila .der{text-align:right}
-.fila .p{font:700 24px/1 var(--display);font-variant-numeric:tabular-nums}
-.fila .p.t-good{color:var(--good)} .fila .p.t-mid{color:var(--ink)} .fila .p.t-bad{color:var(--bad)}
-.delta{font:600 12px/1 var(--display);font-variant-numeric:tabular-nums;margin-top:4px;display:block}
-.delta.baja{color:var(--good)} .delta.sube{color:var(--bad)} .delta.igual{color:var(--muted)}
-.vacio{padding:28px 20px;text-align:center;color:var(--muted)}
-.vacio strong{display:block;color:var(--ink);font:700 18px/1.2 var(--display);text-transform:uppercase;margin-bottom:6px}
+.precio{font:700 25px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:.005em}
+.precio.g{color:var(--good)} .precio.m{color:var(--ink)} .precio.r{color:var(--bad)}
+.delta{display:block;margin-top:5px;font:600 12px/1 var(--display);font-variant-numeric:tabular-nums}
+.delta.b{color:var(--good)} .delta.s{color:var(--bad)} .delta.i{color:var(--faint)}
+.vacio{padding:32px 24px;text-align:center;color:var(--muted);font-size:14px}
+.vacio b{display:block;color:var(--ink);font:700 19px/1.2 var(--display);text-transform:uppercase;margin-bottom:6px}
+.skel{height:64px;margin:10px 16px;border-radius:14px;background:linear-gradient(90deg,var(--surface-2),var(--surface-3),var(--surface-2));background-size:200% 100%;animation:sk 1.3s infinite}
+@keyframes sk{to{background-position:-200% 0}}
 
-/* Marcadores */
-.pin{background:var(--totem);color:var(--led-mid);border-radius:8px;padding:4px 7px 3px;font:700 15px/1 var(--display);font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.35);position:relative;transform:translate(-50%,-100%);display:inline-block;border:1px solid rgba(255,255,255,.08);transition:transform .15s}
-.pin::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:var(--totem)}
-.pin.t-good{color:var(--led-good)} .pin.t-bad{color:var(--led-bad)}
-.pin.top{outline:2px solid var(--led-good);outline-offset:1px}
-.pin.sel{transform:translate(-50%,-100%) scale(1.22);z-index:1000;outline:2px solid #fff}
-.punto{width:12px;height:12px;border-radius:50%;background:var(--led-mid);border:2px solid var(--totem);transform:translate(-50%,-50%);box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.punto.t-good{background:var(--led-good)} .punto.t-bad{background:var(--led-bad)}
-.divpin{background:transparent;border:0}
-.yo{width:18px;height:18px;border-radius:50%;background:#2F6BFF;border:3px solid #fff;box-shadow:0 0 0 0 rgba(47,107,255,.5);animation:latido 2s infinite;transform:translate(-50%,-50%)}
-@keyframes latido{0%{box-shadow:0 0 0 0 rgba(47,107,255,.5)}70%{box-shadow:0 0 0 16px rgba(47,107,255,0)}100%{box-shadow:0 0 0 0 rgba(47,107,255,0)}}
-
-/* Popup */
-.leaflet-popup-content-wrapper{background:var(--surface);color:var(--ink);border-radius:16px;box-shadow:var(--shadow);padding:0}
-.leaflet-popup-tip{background:var(--surface)}
-.leaflet-popup-content{margin:0;width:260px!important}
-.leaflet-container a.leaflet-popup-close-button{color:var(--muted);top:6px;right:6px}
-.pop{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
-.pop .nom{font:700 20px/1.1 var(--display);text-transform:uppercase;padding-right:18px}
-.pop .dir{font-size:13px;color:var(--muted);margin-top:2px}
-.pop .precios{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.pop .pr{background:var(--totem);border-radius:9px;padding:7px 9px}
-.pop .pr .etq{font:600 9.5px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--led-dim)}
-.pop .pr .v{font:700 22px/1.1 var(--display);color:var(--led-mid);font-variant-numeric:tabular-nums}
-.pop .pr .v.t-good{color:var(--led-good)} .pop .pr .v.t-bad{color:var(--led-bad)}
-.pop .horario{font-size:12.5px;color:var(--muted)}
-.pop .ir{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--accent-ink)!important;text-decoration:none;border-radius:11px;padding:11px;font:600 15px/1 var(--body)}
-
-.aviso{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--safe-top) + 72px);z-index:700;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font-size:13.5px;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
-.cargando{position:fixed;inset:0;z-index:900;background:var(--bg);display:grid;place-items:center;transition:opacity .4s}
-.cargando.fuera{opacity:0;pointer-events:none}
-.cargando .c{display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--muted);font:600 13px/1 var(--display);letter-spacing:.16em;text-transform:uppercase}
-.cargando .digs{font:700 56px/1 var(--display);color:var(--led-good);background:var(--totem);padding:10px 18px;border-radius:14px;font-variant-numeric:tabular-nums;text-shadow:0 0 18px rgba(59,224,143,.45)}
+/* ---------- detalle ---------- */
+.det{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 20px;display:flex;flex-direction:column;gap:14px}
+.det-cab{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;touch-action:none}
+.det-cab .mono{width:48px;height:48px;border-radius:14px;font-size:18px}
+.det-cab h3{margin:0;font:700 23px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.det-cab .dir{font-size:13px;color:var(--muted);margin-top:3px}
+.cerrar{width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;color:var(--muted);align-self:start}
+.cerrar svg{width:16px;height:16px}
+.tablero{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tablero .totem{min-width:0;padding:10px 12px 9px}
+.tablero .totem .p{font-size:34px}
+.tablero .totem.off .p{color:var(--led-dim);text-shadow:none}
+.tablero .totem .d{font:600 12px/1 var(--display);margin-top:6px;font-variant-numeric:tabular-nums;color:var(--led-dim)}
+.tablero .totem .d.b{color:var(--led-good)} .tablero .totem .d.s{color:var(--led-bad)}
+.hechos{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.hechos > div{padding:10px 12px;border-right:1px solid var(--line)}
+.hechos > div:last-child{border-right:0}
+.hechos .v{font:700 19px/1.1 var(--display);font-variant-numeric:tabular-nums;margin-top:5px;white-space:nowrap}
+.hechos .v.g{color:var(--good)} .hechos .v.r{color:var(--bad)}
+.horario{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink-2);background:var(--surface-2);border-radius:12px;padding:11px 12px}
+.horario svg{width:17px;height:17px;flex:none;color:var(--muted);margin-top:1px}
+.rutas{display:grid;grid-template-columns:1fr auto auto;gap:8px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:14px 16px;font:700 15px/1 var(--body);text-decoration:none;white-space:nowrap}
+.btn svg{width:18px;height:18px}
+.btn.pri{background:var(--accent);color:var(--accent-ink)}
+.btn.sec{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);font-weight:600;font-size:14px;padding:14px 13px}
 
 @media (min-width:900px){
-  .hoja{left:12px;right:auto;top:calc(var(--safe-top) + 74px);bottom:12px;width:400px;height:auto!important;border-radius:20px;box-shadow:var(--shadow)}
-  .tirador{display:none}
-  .flotantes{bottom:24px}
-  .barra{padding-left:12px}
+  .hoja{left:12px;right:auto;width:410px;top:calc(var(--st) + 76px);bottom:12px;height:auto!important;border-radius:22px;box-shadow:var(--shadow-2)}
+  .asa{display:none}
+  .cab{padding-top:14px}
+  .fabs{bottom:24px}
+  .leaflet-bottom{bottom:0}
+  .top{padding-right:12px}
+  .marca{flex:0 1 410px}
+  .seg{margin-left:auto}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
-<div class="cargando" id="cargando">
-  <div class="c"><div class="digs" id="digs">1,---</div><span id="cargandoTxt">Cargando precios</span></div>
-</div>
-
 <div id="mapa" aria-label="Mapa de gasolineras"></div>
 
-<header class="barra">
+<header class="top">
   <div class="marca">
     <div class="logo" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3BE08F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12"/><path d="M7 8h4"/><path d="M14 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V8l-3-3"/></svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#39E08E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12"/><path d="M7 8h4"/><path d="M14 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V8l-3-3"/></svg>
     </div>
-    <div style="min-width:0">
-      <h1>Diésel Cerca</h1>
-      <div class="act" id="actualizado">—</div>
+    <div class="marca-txt">
+      <b>Diésel Cerca</b>
+      <span id="actualizado">Cargando precios…</span>
     </div>
   </div>
-  <div class="producto" role="group" aria-label="Carburante">
+  <div class="seg" role="group" aria-label="Carburante">
     <button id="pA" aria-pressed="true">Diésel</button>
     <button id="pP" aria-pressed="false">Diésel+</button>
   </div>
 </header>
 
-<button class="buscar-aqui" id="buscarAqui" hidden>Buscar en esta zona</button>
-<div class="aviso" id="aviso" hidden></div>
+<button class="pildora" id="buscarAqui" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+  Buscar en esta zona
+</button>
+<div class="toast" id="toast" hidden></div>
 
-<div class="flotantes">
-  <button class="fab activo" id="btnYo" aria-label="Centrar en mi ubicación">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+<div class="fabs">
+  <button class="fab" id="btnYo" aria-label="Ir a mi ubicación">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 2.3a1 1 0 0 0-1.1-.2l-18 8a1 1 0 0 0 .1 1.9l7.4 2 2 7.4a1 1 0 0 0 1.9.1l8-18a1 1 0 0 0-.3-1.2z"/></svg>
   </button>
 </div>
 
 <section class="hoja" id="hoja" aria-label="Gasolineras">
-  <button class="tirador" id="tirador" aria-label="Ampliar o reducir la lista"><span></span></button>
-  <div class="cabecera">
-    <button class="mejor" id="mejor">
-      <div class="totem"><div class="etq" id="mejorEtq">Gasóleo A</div><div class="precio num" id="mejorPrecio">—<small>€/L</small></div></div>
-      <div class="info">
-        <div class="eyebrow">La más barata cerca</div>
-        <div class="nombre" id="mejorNombre">—</div>
-        <div class="sub" id="mejorSub">—</div>
+  <div class="asa" id="asa"><span></span></div>
+
+  <!-- Vista lista -->
+  <div class="vista" id="vLista">
+    <div class="cab" id="cabLista">
+      <div class="titulo-zona">
+        <h2 id="zona">Cerca de ti</h2>
+        <span class="n" id="cuantas"></span>
       </div>
-    </button>
-    <div class="resumen">
-      <div class="dato"><div class="k">Media zona</div><div class="v" id="rMedia">—</div></div>
-      <div class="dato"><div class="k">Más cara</div><div class="v" id="rMax">—</div></div>
-      <div class="dato"><div class="k" id="rAhorroK">Ahorro 50 L</div><div class="v ahorro" id="rAhorro">—</div></div>
+      <button class="mejor-card" id="mejor">
+        <div class="totem"><div class="cap" id="mejorEtq">Gasóleo A</div><div class="p" id="mejorPrecio">–,–––<small>€/L</small></div></div>
+        <div class="info">
+          <div class="cap">La más barata</div>
+          <div class="nom" id="mejorNom">Buscando…</div>
+          <div class="sub" id="mejorSub">&nbsp;</div>
+        </div>
+        <span class="ir-mini" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </button>
+      <div class="dist" id="dist">
+        <div class="dist-top"><span class="cap">Precios en la zona</span><span class="ah" id="ahorro"></span></div>
+        <div class="hist" id="hist"></div>
+        <div class="escala"><span class="a" id="eMin">–</span><span class="m" id="eMed"></span><span class="z" id="eMax">–</span></div>
+      </div>
+      <div class="chips" role="toolbar" aria-label="Filtros">
+        <button class="chip" data-radio="3">3 km</button>
+        <button class="chip" data-radio="5">5 km</button>
+        <button class="chip" data-radio="10">10 km</button>
+        <button class="chip" data-radio="20">20 km</button>
+        <span class="sep"></span>
+        <button class="chip" data-orden="precio">Más barata</button>
+        <button class="chip" data-orden="dist">Más cerca</button>
+        <span class="sep"></span>
+        <button class="chip" id="soloAbiertas"><span class="dot"></span>Abiertas</button>
+        <button class="chip" id="deposito">Depósito 50 L</button>
+      </div>
     </div>
-    <div class="controles" role="toolbar" aria-label="Filtros">
-      <button class="chip" data-radio="3">3 km</button>
-      <button class="chip" data-radio="5">5 km</button>
-      <button class="chip" data-radio="10">10 km</button>
-      <button class="chip" data-radio="20">20 km</button>
-      <span class="sep"></span>
-      <button class="chip" data-orden="precio">Por precio</button>
-      <button class="chip" data-orden="dist">Por distancia</button>
-      <span class="sep"></span>
-      <button class="chip" id="soloAbiertas" aria-pressed="false">Abiertas ahora</button>
-      <button class="chip" id="deposito">Depósito 50 L</button>
-    </div>
+    <ul class="lista" id="lista">
+      <li class="skel"></li><li class="skel"></li><li class="skel"></li>
+    </ul>
   </div>
-  <ul class="lista" id="lista"></ul>
+
+  <!-- Vista detalle -->
+  <div class="vista" id="vDet" hidden>
+    <div class="det" id="det"></div>
+  </div>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (() => {
+  "use strict";
   const PATERNA = [39.5025, -0.4406];
   const API = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/";
-  const LITROS_OPC = [40, 50, 60, 70];
+  const LITROS = [40, 50, 60, 70];
+  const $ = id => document.getElementById(id);
 
-  // ---------- estado ----------
-  const guardado = (k, d) => { try { const v = localStorage.getItem("dc_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } };
-  const guardar = (k, v) => { try { localStorage.setItem("dc_" + k, JSON.stringify(v)); } catch {} };
+  // ---------- almacenamiento local ----------
+  const leer = (k, d) => { try { const v = localStorage.getItem("dc2_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } };
+  const grabar = (k, v) => { try { localStorage.setItem("dc2_" + k, JSON.stringify(v)); } catch {} };
+
   const st = {
-    estaciones: [], centro: guardado("centro", PATERNA), yo: null,
-    radio: guardado("radio", 5), orden: guardado("orden", "precio"),
-    prod: guardado("prod", "A"), soloAbiertas: guardado("abiertas", false), litros: guardado("litros", 50),
-    sel: null, visibles: [], expandida: false
+    est: [], centro: leer("centro", PATERNA), yo: null, manual: false,
+    radio: leer("radio", 5), orden: leer("orden", "precio"), prod: leer("prod", "A"),
+    abiertas: leer("abiertas", false), litros: leer("litros", 50),
+    vis: [], stats: null, sel: null, snap: 1, cargado: false
   };
 
-  // ---------- utilidades ----------
-  const $ = id => document.getElementById(id);
-  const eur = (v, d = 3) => v == null ? "—" : v.toFixed(d).replace(".", ",");
-  const km = d => d < 1 ? Math.round(d * 1000) + " m" : d.toFixed(d < 10 ? 1 : 0).replace(".", ",") + " km";
+  // ---------- formato ----------
+  const eur = (v, d = 3) => v == null ? "–" : v.toFixed(d).replace(".", ",");
+  const km = d => d < 1 ? Math.round(d * 1000 / 10) * 10 + " m" : d.toFixed(d < 10 ? 1 : 0).replace(".", ",") + " km";
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const titulo = s => String(s || "").toLowerCase().replace(/(^|[\s\-/.(])([a-záéíóúñü])/g, (m, a, b) => a + b.toUpperCase());
-  function dist(a, b) {
-    const R = 6371, r = x => x * Math.PI / 180;
-    const dLat = r(b[0] - a[0]), dLon = r(b[1] - a[1]);
-    const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(dLon / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(h));
+  const MIN = new Set(["de", "del", "la", "las", "el", "los", "y", "a", "en"]);
+  const tit = s => String(s || "").toLowerCase().replace(/\s+/g, " ").trim()
+    .replace(/[a-záéíóúñüç0-9ªº.'-]+/g, (w, i) => (i > 0 && MIN.has(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1));
+  function marca(r) {
+    let s = String(r || "").trim().replace(/\s*,?\s*S\.?\s*[AL]\.?\s*U?\.?$/i, "").trim();
+    if (!s || /^n[ºo°]\s*[\d.]/i.test(s) || /^\d+$/.test(s)) return "Independiente";
+    return s;
   }
-  function aviso(txt, ms = 3500) {
-    const a = $("aviso"); a.textContent = txt; a.hidden = false;
-    clearTimeout(aviso.t); aviso.t = setTimeout(() => a.hidden = true, ms);
+  const COL = { REPSOL: "#F07C00", CEPSA: "#D6282E", MOEVE: "#00857C", BP: "#009A44", SHELL: "#E8B400", GALP: "#EE5A24", PLENOIL: "#00A3DA", BALLENOIL: "#1B75BB", PETROPRIX: "#E30613", AVIA: "#C4161C", CARREFOUR: "#1E4FA1", ALCAMPO: "#D1242A", PLENERGY: "#6A2C91", ESCLATOIL: "#2E9A47", "LOW COST": "#333F48", DISA: "#E2001A" };
+  function colorMarca(n) {
+    const u = n.toUpperCase();
+    for (const k in COL) if (u.startsWith(k) || u.includes(" " + k)) return COL[k];
+    let h = 0; for (const c of u) h = (h * 31 + c.charCodeAt(0)) % 360;
+    return `hsl(${h} 32% 38%)`;
   }
+  const iniciales = n => n === "Independiente" ? "IND" : n.replace(/[^A-Za-zÁÉÍÓÚÑ0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase() || "·";
 
-  // Horario tipo "L-V: 06:00-22:00; S: 07:00-14:00" o "L-D: 24H"
+  function dist(a, b) {
+    const r = x => x * Math.PI / 180, dLa = r(b[0] - a[0]), dLo = r(b[1] - a[1]);
+    const h = Math.sin(dLa / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(dLo / 2) ** 2;
+    return 12742 * Math.asin(Math.sqrt(h));
+  }
+  function toast(t, ms = 3200) { const e = $("toast"); e.textContent = t; e.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => e.hidden = true, ms); }
+
+  // Horario: "L-V: 06:00-22:00; S: 07:00-14:00" · "L-D: 24H"
   const DIAS = "LMXJVSD";
-  function abiertaAhora(h, ahora = new Date()) {
+  function abierta(h, now = new Date()) {
     if (!h) return null;
-    const hoy = (ahora.getDay() + 6) % 7, min = ahora.getHours() * 60 + ahora.getMinutes();
-    let entendido = false, cubreHoy = false;
+    const hoy = (now.getDay() + 6) % 7, m = now.getHours() * 60 + now.getMinutes();
+    let ok = false;
     for (const seg of h.toUpperCase().split(";")) {
-      const m = seg.match(/^\s*([LMXJVSD])(?:\s*-\s*([LMXJVSD]))?\s*:\s*(.+)$/);
-      if (!m) continue;
-      entendido = true;
-      const a = DIAS.indexOf(m[1]), b = m[2] ? DIAS.indexOf(m[2]) : a;
-      const incluye = a <= b ? (hoy >= a && hoy <= b) : (hoy >= a || hoy <= b);
-      if (!incluye) continue;
-      cubreHoy = true;
-      if (/24\s*H/.test(m[3])) return true;
-      for (const r of m[3].matchAll(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/g)) {
+      const x = seg.match(/^\s*([LMXJVSD])(?:\s*-\s*([LMXJVSD]))?\s*:\s*(.+)$/);
+      if (!x) continue; ok = true;
+      const a = DIAS.indexOf(x[1]), b = x[2] ? DIAS.indexOf(x[2]) : a;
+      if (!(a <= b ? hoy >= a && hoy <= b : hoy >= a || hoy <= b)) continue;
+      if (/24\s*H/.test(x[3])) return true;
+      for (const r of x[3].matchAll(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/g)) {
         const i = +r[1] * 60 + +r[2], f = +r[3] * 60 + +r[4];
-        if (f > i ? (min >= i && min < f) : (min >= i || min < f)) return true;
+        if (f > i ? m >= i && m < f : m >= i || m < f) return true;
       }
     }
-    return entendido ? false : null;
+    return ok ? false : null;
+  }
+  function horarioBonito(h) {
+    if (!h) return "Horario no disponible";
+    if (/^\s*L-D:\s*24H\s*$/i.test(h)) return "Abierta 24 horas, todos los días";
+    return h.replace(/L-D/g, "Todos los días").replace(/L-V/g, "Lun–Vie").replace(/L-S/g, "Lun–Sáb").replace(/S-D/g, "Sáb–Dom")
+      .replace(/\bS:/g, "Sáb:").replace(/\bD:/g, "Dom:").replace(/;/g, " · ");
   }
 
   // ---------- datos ----------
   const num = s => { if (s == null || s === "") return null; const v = parseFloat(String(s).replace(",", ".")); return isFinite(v) && v > 0 ? v : null; };
   const coord = s => { const v = parseFloat(String(s ?? "").replace(",", ".")); return isFinite(v) ? v : null; };
-  function desdeCompacto(j) {
-    return {
-      actualizado: j.actualizado,
-      estaciones: j.estaciones.map(e => ({ id: e[0], lat: e[1], lon: e[2], A: e[3], P: e[4], dA: e[5], dP: e[6], rotulo: e[7], dir: e[8], loc: e[9], horario: e[10] }))
-    };
-  }
-  function desdeApi(j) {
+  const deCompacto = j => ({ fecha: j.actualizado, est: j.estaciones.map(e => ({ id: String(e[0]), lat: e[1], lon: e[2], A: e[3], P: e[4], dA: e[5], dP: e[6], rot: e[7], dir: e[8], loc: e[9], hor: e[10] })) });
+  function deApi(j) {
     const est = [];
     for (const e of j.ListaEESSPrecio || []) {
       if (e["Tipo Venta"] && e["Tipo Venta"] !== "P") continue;
       const A = num(e["Precio Gasoleo A"]), P = num(e["Precio Gasoleo Premium"]);
       if (A == null && P == null) continue;
-      est.push({ id: e.IDEESS, lat: coord(e.Latitud), lon: coord(e["Longitud (WGS84)"]), A, P, dA: null, dP: null,
-        rotulo: e["Rótulo"], dir: e["Dirección"], loc: e.Localidad, horario: e.Horario });
+      est.push({ id: String(e.IDEESS), lat: coord(e.Latitud), lon: coord(e["Longitud (WGS84)"]), A, P, dA: null, dP: null, rot: e["Rótulo"], dir: e["Dirección"], loc: e.Localidad, hor: e.Horario });
     }
-    return { actualizado: j.Fecha, estaciones: est };
+    return { fecha: j.Fecha, est };
   }
-  async function cargarDatos() {
+  async function cargar() {
     try {
-      const r = await fetch("data/diesel.json?t=" + Date.now(), { cache: "no-store" });
+      const r = await fetch("data/diesel.json?t=" + Math.floor(Date.now() / 300000), { cache: "no-store" });
       if (!r.ok) throw 0;
-      return desdeCompacto(await r.json());
+      return deCompacto(await r.json());
     } catch {
-      $("cargandoTxt").textContent = "Consultando al Ministerio";
       const r = await fetch(API);
       if (!r.ok) throw new Error("api");
-      return desdeApi(await r.json());
+      return deApi(await r.json());
     }
   }
 
   // ---------- mapa ----------
-  const mapa = L.map("mapa", { zoomControl: false, attributionControl: true, preferCanvas: false }).setView(st.centro, 13);
+  const mapa = L.map("mapa", { zoomControl: false, attributionControl: true, zoomSnap: .25 }).setView(st.centro, 13);
   mapa.attributionControl.setPrefix(false);
-  const oscuro = () => {
-    const t = document.documentElement.dataset.theme;
-    return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  };
-  let capa;
+  const esOscuro = () => { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
+  let teselas;
   function ponerTeselas() {
-    if (capa) mapa.removeLayer(capa);
-    const estilo = oscuro() ? "dark_all" : "rastertiles/voyager";
-    capa = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${estilo}/{z}/{x}/{y}{r}.png`, {
-      subdomains: "abcd", maxZoom: 19,
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> · © <a href="https://carto.com/attributions">CARTO</a> · Datos: MITECO'
+    if (teselas) mapa.removeLayer(teselas);
+    teselas = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${esOscuro() ? "dark_all" : "rastertiles/voyager"}/{z}/{x}/{y}{r}.png`, {
+      subdomains: "abcd", maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> · © <a href="https://carto.com/attributions">CARTO</a> · Precios: MITECO'
     }).addTo(mapa);
-    document.querySelector('meta[name="theme-color"]').content = oscuro() ? "#0C1115" : "#EEF1F3";
+    document.querySelector('meta[name="theme-color"]').content = esOscuro() ? "#0B1014" : "#EDF0F2";
   }
   ponerTeselas();
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ponerTeselas);
-
-  const grupo = L.layerGroup().addTo(mapa);
+  const capa = L.layerGroup().addTo(mapa);
   let circulo = null, marcaYo = null;
-  const marcadores = new Map();
-
-  function tier(p, q1, q3) { return p == null ? "" : p <= q1 ? "t-good" : p >= q3 ? "t-bad" : "t-mid"; }
 
   // ---------- cálculo ----------
   function calcular() {
-    const c = st.centro, R = st.radio, prod = st.prod;
-    const dLat = R / 111, dLon = R / (111 * Math.cos(c[0] * Math.PI / 180));
-    let v = [];
-    for (const e of st.estaciones) {
-      if (e.lat == null || Math.abs(e.lat - c[0]) > dLat || Math.abs(e.lon - c[1]) > dLon) continue;
-      const p = e[prod]; if (p == null) continue;
+    const c = st.centro, R = st.radio, p = st.prod;
+    const dLa = R / 111, dLo = R / (111 * Math.cos(c[0] * Math.PI / 180));
+    const v = [];
+    for (const e of st.est) {
+      if (e.lat == null || Math.abs(e.lat - c[0]) > dLa || Math.abs(e.lon - c[1]) > dLo) continue;
+      const pr = e[p]; if (pr == null) continue;
       const d = dist(c, [e.lat, e.lon]); if (d > R) continue;
-      const ab = abiertaAhora(e.horario);
-      if (st.soloAbiertas && ab === false) continue;
-      v.push({ e, p, d, ab, delta: e["d" + prod] });
+      const ab = abierta(e.hor);
+      if (st.abiertas && ab === false) continue;
+      v.push({ e, p: pr, d, ab, delta: e["d" + p], marca: marca(e.rot) });
     }
-    const precios = v.map(x => x.p).sort((a, b) => a - b);
-    const q = f => precios.length ? precios[Math.min(precios.length - 1, Math.floor(f * (precios.length - 1)))] : null;
+    const ps = v.map(x => x.p).sort((a, b) => a - b);
+    const q = f => ps[Math.min(ps.length - 1, Math.floor(f * (ps.length - 1)))];
     const q1 = q(.25), q3 = q(.75);
-    v.forEach(x => x.t = tier(x.p, q1, q3));
+    for (const x of v) x.t = x.p <= q1 ? "g" : x.p >= q3 ? "r" : "m";
     const porPrecio = [...v].sort((a, b) => a.p - b.p || a.d - b.d);
-    porPrecio.forEach((x, i) => x.rank = i + 1);
-    st.visibles = st.orden === "dist" ? [...v].sort((a, b) => a.d - b.d) : porPrecio;
-    st.stats = precios.length ? {
-      min: precios[0], max: precios[precios.length - 1],
-      media: precios.reduce((s, x) => s + x, 0) / precios.length, mejor: porPrecio[0]
-    } : null;
+    porPrecio.forEach((x, i) => x.rk = i + 1);
+    st.vis = st.orden === "dist" ? [...v].sort((a, b) => a.d - b.d) : porPrecio;
+    st.stats = ps.length ? { min: ps[0], max: ps[ps.length - 1], media: ps.reduce((s, x) => s + x, 0) / ps.length, mejor: porPrecio[0], ps } : null;
+    // Nombre de la zona: localidad más repetida entre las 5 más cercanas
+    const cerca = [...v].sort((a, b) => a.d - b.d).slice(0, 5);
+    const cnt = {}; cerca.forEach(x => { const l = tit(x.e.loc); cnt[l] = (cnt[l] || 0) + 1; });
+    st.zona = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || "Esta zona";
   }
 
   // ---------- pintar ----------
+  const acc = () => getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
   function pintarMapa() {
-    grupo.clearLayers(); marcadores.clear();
+    capa.clearLayers();
     if (circulo) mapa.removeLayer(circulo);
-    circulo = L.circle(st.centro, { radius: st.radio * 1000, color: getComputedStyle(document.documentElement).getPropertyValue("--accent").trim(), weight: 1.5, opacity: .55, fillOpacity: .04, dashArray: "4 6", interactive: false }).addTo(mapa);
+    circulo = L.circle(st.centro, { radius: st.radio * 1000, color: acc(), weight: 1.5, opacity: .5, fillColor: acc(), fillOpacity: .035, dashArray: "3 7", interactive: false }).addTo(mapa);
     const z = mapa.getZoom();
-    for (const x of st.visibles) {
-      const pill = z >= 13 || x.rank <= 8 || x.e.id === st.sel;
+    for (const x of st.vis) {
+      const s = x.e.id === st.sel;
+      const pill = z >= 13.5 || x.rk <= 6 || s;
       const html = pill
-        ? `<div class="pin ${x.t} ${x.rank === 1 ? "top" : ""} ${x.e.id === st.sel ? "sel" : ""}">${eur(x.p)}</div>`
-        : `<div class="punto ${x.t}"></div>`;
-      const m = L.marker([x.e.lat, x.e.lon], {
-        icon: L.divIcon({ className: "divpin", html, iconSize: [0, 0] }),
-        zIndexOffset: x.e.id === st.sel ? 2000 : pill ? 1000 - x.rank : -x.rank, keyboard: false
-      }).addTo(grupo);
-      m.on("click", () => seleccionar(x.e.id, false));
-      marcadores.set(x.e.id, { m, x });
+        ? `<div class="pin ${x.t === "g" ? "g" : x.t === "r" ? "r" : ""} ${s ? "sel" : ""}">${x.rk === 1 ? '<span class="mejor">MEJOR</span>' : ""}<i></i><b>${eur(x.p)}</b></div>`
+        : `<div class="punto ${x.t === "g" ? "g" : x.t === "r" ? "r" : ""}"></div>`;
+      L.marker([x.e.lat, x.e.lon], { icon: L.divIcon({ className: "divpin", html, iconSize: [0, 0] }), zIndexOffset: s ? 5000 : pill ? 2000 - x.rk : -x.rk, keyboard: false })
+        .on("click", () => abrirDetalle(x.e.id, false)).addTo(capa);
     }
   }
 
-  function flecha(delta) {
-    if (delta == null) return "";
-    if (Math.abs(delta) < 0.0005) return `<span class="delta igual">= ayer</span>`;
-    return delta < 0
-      ? `<span class="delta baja">▼ ${eur(-delta)}</span>`
-      : `<span class="delta sube">▲ ${eur(delta)}</span>`;
-  }
-  function badge(ab) { return ab === true ? `<span class="badge abierta">Abierta</span>` : ab === false ? `<span class="badge cerrada">Cerrada</span>` : ""; }
+  const deltaHtml = d => d == null ? "" : Math.abs(d) < .0005 ? `<span class="delta i">= ayer</span>` : d < 0 ? `<span class="delta b">▼ ${eur(-d)}</span>` : `<span class="delta s">▲ ${eur(d)}</span>`;
+  const estHtml = a => a === true ? `<span class="est ab">Abierta</span>` : a === false ? `<span class="est ce">Cerrada</span>` : "";
+  const monoHtml = (x, rk) => `<span class="mono" style="background:${colorMarca(x.marca)}">${esc(iniciales(x.marca))}${rk ? `<span class="rk">${rk}</span>` : ""}</span>`;
 
   function pintarLista() {
     const ul = $("lista");
-    if (!st.visibles.length) {
-      ul.innerHTML = `<li class="vacio"><strong>Nada en ${st.radio} km</strong>Amplía el radio o busca en otra zona.</li>`;
-      return;
-    }
-    ul.innerHTML = st.visibles.map(x => `
-      <li class="fila ${x.e.id === st.sel ? "sel" : ""}" data-id="${esc(x.e.id)}" tabindex="0">
-        <div class="pos">${x.rank}</div>
+    if (!st.vis.length) { ul.innerHTML = `<li class="vacio"><b>Nada en ${st.radio} km</b>Amplía el radio o busca en otra zona.</li>`; return; }
+    ul.innerHTML = st.vis.map(x => `
+      <li class="fila" data-id="${esc(x.e.id)}" tabindex="0">
+        ${monoHtml(x, x.rk)}
         <div style="min-width:0">
-          <div class="nom">${esc(x.e.rotulo || "Sin marca")}</div>
-          <div class="dir">${esc(titulo(x.e.dir))} · ${esc(titulo(x.e.loc))}</div>
-          <div class="meta"><span class="num" style="font-size:13px">${km(x.d)}</span>${badge(x.ab)}</div>
+          <div class="nom">${esc(x.marca)}</div>
+          <div class="dir">${esc(tit(x.e.dir))}</div>
+          <div class="meta"><span class="km">${km(x.d)}</span>${estHtml(x.ab)}</div>
         </div>
-        <div class="der"><div class="p ${x.t}">${eur(x.p)}</div>${flecha(x.delta)}</div>
+        <div class="der"><div class="precio ${x.t}">${eur(x.p)}</div>${deltaHtml(x.delta)}</div>
       </li>`).join("");
   }
 
   function pintarCabecera() {
-    const s = st.stats, etq = st.prod === "A" ? "Gasóleo A" : "Gasóleo Premium";
-    $("mejorEtq").textContent = etq;
+    const s = st.stats;
+    $("mejorEtq").textContent = st.prod === "A" ? "Gasóleo A" : "Gasóleo Premium";
+    $("zona").textContent = s ? st.zona : "Sin resultados";
+    $("cuantas").textContent = s ? `${st.vis.length} en ${st.radio} km` : "";
     if (!s) {
-      $("mejorPrecio").innerHTML = "—<small>€/L</small>";
-      $("mejorNombre").textContent = "Sin resultados"; $("mejorSub").textContent = "Prueba con un radio mayor";
-      ["rMedia", "rMax", "rAhorro"].forEach(i => $(i).textContent = "—"); return;
+      $("mejorPrecio").innerHTML = "–,–––<small>€/L</small>"; $("mejorNom").textContent = "Nada cerca"; $("mejorSub").textContent = "Prueba con un radio mayor";
+      $("hist").innerHTML = ""; $("eMin").textContent = $("eMax").textContent = "–"; $("eMed").textContent = ""; $("ahorro").textContent = ""; return;
     }
     const b = s.mejor;
     $("mejorPrecio").innerHTML = `${eur(b.p)}<small>€/L</small>`;
-    $("mejorNombre").textContent = b.e.rotulo || "Sin marca";
-    $("mejorSub").textContent = `${km(b.d)} · ${titulo(b.e.dir)}`;
-    $("rMedia").textContent = eur(s.media);
-    $("rMax").textContent = eur(s.max);
-    $("rAhorroK").textContent = `Ahorro ${st.litros} L`;
-    $("rAhorro").textContent = eur((s.media - s.min) * st.litros, 2) + " €";
+    $("mejorNom").textContent = b.marca;
+    $("mejorSub").textContent = `${km(b.d)} · ${tit(b.e.dir)}`;
+    $("ahorro").innerHTML = `Ahorras <b>${eur((s.media - s.min) * st.litros, 2)} €</b> en ${st.litros} L`;
+    // histograma
+    const N = 22, lo = s.min, hi = s.max, w = (hi - lo) || .001, bins = Array(N).fill(0);
+    for (const p of s.ps) bins[Math.min(N - 1, Math.floor((p - lo) / w * N))]++;
+    const mx = Math.max(...bins);
+    const col = i => { const t = i / (N - 1); return t < .33 ? "var(--good)" : t > .66 ? "var(--bad)" : "var(--mid)"; };
+    const posMed = ((s.media - lo) / w) * 100;
+    $("hist").innerHTML = bins.map((n, i) => `<i style="height:${n ? Math.max(10, n / mx * 100) : 6}%;background:${n ? col(i) : "var(--surface-3)"}"></i>`).join("") +
+      `<div class="media" style="left:${Math.min(98, Math.max(2, posMed))}%"></div>`;
+    $("eMin").textContent = eur(s.min); $("eMax").textContent = eur(s.max); $("eMed").textContent = "Media " + eur(s.media);
   }
 
   function pintarControles() {
     document.querySelectorAll("[data-radio]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.radio === st.radio));
     document.querySelectorAll("[data-orden]").forEach(b => b.setAttribute("aria-pressed", b.dataset.orden === st.orden));
-    $("soloAbiertas").setAttribute("aria-pressed", st.soloAbiertas);
+    $("soloAbiertas").setAttribute("aria-pressed", st.abiertas);
     $("deposito").textContent = `Depósito ${st.litros} L`;
-    $("pA").setAttribute("aria-pressed", st.prod === "A");
-    $("pP").setAttribute("aria-pressed", st.prod === "P");
+    $("pA").setAttribute("aria-pressed", st.prod === "A"); $("pP").setAttribute("aria-pressed", st.prod === "P");
   }
 
   function refrescar(encuadrar) {
-    calcular(); pintarControles(); pintarCabecera(); pintarLista(); pintarMapa();
-    if (encuadrar) mapa.fitBounds(L.latLng(st.centro).toBounds(st.radio * 2000), { paddingTopLeft: [innerWidth >= 900 ? 430 : 20, 80], paddingBottomRight: [20, innerWidth >= 900 ? 20 : (parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sheet-h")) || 300) + 16] });
+    pintarControles();
+    if (!st.cargado) return;
+    calcular(); pintarCabecera(); pintarLista(); pintarMapa();
+    if (st.sel) { const it = st.vis.find(x => x.e.id === st.sel); if (it) pintarDetalle(it); else cerrarDetalle(); }
+    if (encuadrar) encuadre();
+  }
+  function padInferior() { return innerWidth >= 900 ? 20 : alturaSnap(st.snap) + 16; }
+  function encuadre() {
+    st.auto = true;
+    mapa.fitBounds(L.latLng(st.centro).toBounds(st.radio * 2000), { paddingTopLeft: [innerWidth >= 900 ? 440 : 16, 80], paddingBottomRight: [16, padInferior()], animate: true });
   }
 
-  // ---------- selección ----------
-  function popupHtml(x) {
-    const e = x.e;
-    const pr = (k, lab) => {
-      const v = e[k];
-      const t = k === st.prod ? x.t : "";
-      return `<div class="pr"><div class="etq">${lab}</div><div class="v ${t}">${v == null ? "—" : eur(v)}</div></div>`;
+  // ---------- detalle ----------
+  function pintarDetalle(x) {
+    const e = x.e, s = st.stats, otro = st.prod === "A" ? "P" : "A";
+    const dHtml = d => d == null ? "" : Math.abs(d) < .0005 ? `<div class="d">Igual que ayer</div>` : `<div class="d ${d < 0 ? "b" : "s"}">${d < 0 ? "▼" : "▲"} ${eur(Math.abs(d))} vs ayer</div>`;
+    const tot = (k, lab) => {
+      const v = e[k], on = k === st.prod;
+      const colTxt = on ? (x.t === "g" ? "var(--led-good)" : x.t === "r" ? "var(--led-bad)" : "var(--led-mid)") : "";
+      return `<div class="totem ${v == null ? "off" : ""}"><div class="cap">${lab}</div><div class="p" style="${v == null ? "" : on ? `color:${colTxt}` : "color:var(--led-mid);text-shadow:none"}">${v == null ? "–,–––" : eur(v)}<small>€/L</small></div>${dHtml(e["d" + k])}</div>`;
     };
-    return `<div class="pop">
-      <div><div class="nom">${esc(e.rotulo || "Sin marca")}</div><div class="dir">${esc(titulo(e.dir))}, ${esc(titulo(e.loc))} · ${km(x.d)}</div></div>
-      <div class="precios">${pr("A", "Gasóleo A")}${pr("P", "Premium")}</div>
-      <div class="horario">${badge(x.ab)} ${esc(e.horario || "")}</div>
-      <a class="ir" href="https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lon}" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>Cómo llegar</a>
-    </div>`;
+    const dif = s ? x.p - s.media : 0;
+    const url = `${e.lat},${e.lon}`;
+    $("det").innerHTML = `
+      <div class="det-cab" id="detCab">
+        ${monoHtml(x, 0)}
+        <div style="min-width:0"><h3>${esc(x.marca)}</h3><div class="dir">${esc(tit(e.dir))}, ${esc(tit(e.loc))}</div></div>
+        <button class="cerrar" id="cerrarDet" aria-label="Volver a la lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="tablero">${tot(st.prod, st.prod === "A" ? "Gasóleo A" : "Gasóleo Premium")}${tot(otro, otro === "A" ? "Gasóleo A" : "Gasóleo Premium")}</div>
+      <div class="hechos">
+        <div><div class="cap">Distancia</div><div class="v">${km(x.d)}</div></div>
+        <div><div class="cap">Puesto</div><div class="v">${x.rk}º <span style="font-size:13px;color:var(--muted)">de ${st.vis.length}</span></div></div>
+        <div><div class="cap">Vs media</div><div class="v ${dif <= 0 ? "g" : "r"}">${dif <= 0 ? "−" : "+"}${eur(Math.abs(dif) * st.litros, 2)} €</div></div>
+      </div>
+      <div class="horario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div>${estHtml(x.ab)} ${esc(horarioBonito(e.hor))}</div></div>
+      <div class="rutas">
+        <a class="btn pri" href="https://www.google.com/maps/dir/?api=1&destination=${url}&travelmode=driving" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 2.3a1 1 0 0 0-1.1-.2l-18 8a1 1 0 0 0 .1 1.9l7.4 2 2 7.4a1 1 0 0 0 1.9.1l8-18a1 1 0 0 0-.3-1.2z"/></svg>Cómo llegar</a>
+        <a class="btn sec" href="https://maps.apple.com/?daddr=${url}&dirflg=d" target="_blank" rel="noopener">Apple</a>
+        <a class="btn sec" href="https://waze.com/ul?ll=${url}&navigate=yes" target="_blank" rel="noopener">Waze</a>
+      </div>`;
+    $("cerrarDet").onclick = cerrarDetalle;
   }
-  function seleccionar(id, volar) {
+  function abrirDetalle(id, volar) {
+    const x = st.vis.find(v => v.e.id === id); if (!x) return;
     st.sel = id;
-    const it = st.visibles.find(x => x.e.id === id); if (!it) return;
+    pintarDetalle(x);
+    $("vLista").hidden = true; $("vDet").hidden = false; $("det").scrollTop = 0;
+    if (innerWidth < 900) ponerSnap(1);
     pintarMapa();
-    document.querySelectorAll(".fila").forEach(f => f.classList.toggle("sel", f.dataset.id === id));
-    const f = document.querySelector(`.fila[data-id="${CSS.escape(id)}"]`);
-    if (f) f.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    if (volar) { expandir(false); mapa.flyTo([it.e.lat, it.e.lon], Math.max(mapa.getZoom(), 15), { duration: .6 }); }
-    L.popup({ offset: [0, -30], autoPanPaddingTopLeft: [20, 90], autoPanPaddingBottomRight: [20, innerWidth >= 900 ? 20 : (parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sheet-h")) || 300) + 16], closeButton: true })
-      .setLatLng([it.e.lat, it.e.lon]).setContent(popupHtml(it)).openOn(mapa);
+    const pt = mapa.project([x.e.lat, x.e.lon], Math.max(mapa.getZoom(), 15));
+    const off = innerWidth >= 900 ? [-210, 0] : [0, (alturaSnap(1) - 60) / 2];
+    const destino = mapa.unproject(pt.add(off), Math.max(mapa.getZoom(), 15));
+    st.auto = true;
+    if (volar) mapa.flyTo(destino, Math.max(mapa.getZoom(), 15), { duration: .6 }); else mapa.panTo(destino, { animate: true });
   }
-  mapa.on("popupclose", () => { if (st.sel) { st.sel = null; document.querySelectorAll(".fila.sel").forEach(f => f.classList.remove("sel")); } });
+  function cerrarDetalle() {
+    st.sel = null; $("vDet").hidden = true; $("vLista").hidden = false; pintarMapa();
+  }
 
-  // ---------- hoja ----------
-  function altoHoja() {
-    if (innerWidth >= 900) return;
-    const h = st.expandida ? Math.round(innerHeight * .78) : Math.min(330, Math.round(innerHeight * .44));
-    document.documentElement.style.setProperty("--sheet-h", h + "px");
-    mapa.invalidateSize();
+  // ---------- hoja arrastrable ----------
+  const hoja = $("hoja");
+  function alturaSnap(i) {
+    const H = innerHeight;
+    return [Math.min(236, H * .32), Math.min(H * .56, 520), H * .86][i] | 0;
   }
-  function expandir(v) { st.expandida = v; altoHoja(); }
-  $("tirador").onclick = () => expandir(!st.expandida);
-  addEventListener("resize", altoHoja);
-  // arrastre del tirador
+  function ponerSnap(i) {
+    st.snap = i;
+    if (innerWidth >= 900) { document.documentElement.style.setProperty("--sheet-h", "0px"); return; }
+    document.documentElement.style.setProperty("--sheet-h", alturaSnap(i) + "px");
+  }
   (() => {
-    let y0 = null;
-    const t = $("tirador");
-    t.addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });
-    t.addEventListener("touchend", e => {
-      if (y0 == null) return; const dy = e.changedTouches[0].clientY - y0; y0 = null;
-      if (dy < -30) expandir(true); else if (dy > 30) expandir(false);
-    });
+    let y0, h0, t0, activo = false, movido = false;
+    const inicio = e => {
+      if (innerWidth >= 900) return;
+      if (e.target.closest(".chips, a, .cerrar")) return;
+      activo = true; movido = false; y0 = e.clientY; h0 = hoja.getBoundingClientRect().height; t0 = performance.now();
+      hoja.classList.add("arrastrando");
+    };
+    const mover = e => {
+      if (!activo) return;
+      const dy = e.clientY - y0;
+      if (Math.abs(dy) > 4) movido = true;
+      if (!movido) return;
+      const h = Math.max(alturaSnap(0) * .8, Math.min(innerHeight * .92, h0 - dy));
+      hoja.style.height = h + "px";
+    };
+    const fin = e => {
+      if (!activo) return; activo = false; hoja.classList.remove("arrastrando");
+      if (!movido) { hoja.style.height = ""; return; }
+      const h = hoja.getBoundingClientRect().height, v = (e.clientY - y0) / Math.max(1, performance.now() - t0);
+      hoja.style.height = "";
+      let i;
+      if (v < -.5) i = Math.min(2, st.snap + 1);
+      else if (v > .5) i = Math.max(0, st.snap - 1);
+      else { const hs = [0, 1, 2].map(alturaSnap); i = hs.reduce((b, x, k) => Math.abs(x - h) < Math.abs(hs[b] - h) ? k : b, 0); }
+      ponerSnap(i);
+      e.preventDefault();
+    };
+    for (const el of [$("asa"), $("cabLista"), $("vDet")]) el.addEventListener("pointerdown", inicio);
+    addEventListener("pointermove", mover, { passive: true });
+    addEventListener("pointerup", fin); addEventListener("pointercancel", fin);
+    // evitar que un arrastre se convierta en clic
+    hoja.addEventListener("click", e => { if (movido) { e.stopPropagation(); e.preventDefault(); movido = false; } }, true);
   })();
-  $("lista").addEventListener("scroll", () => { if (!st.expandida && $("lista").scrollTop > 40) expandir(true); }, { passive: true });
+  $("asa").addEventListener("click", () => ponerSnap(st.snap === 2 ? 1 : 2));
+  $("lista").addEventListener("scroll", () => { if (st.snap < 2 && $("lista").scrollTop > 30) ponerSnap(2); }, { passive: true });
+  addEventListener("resize", () => ponerSnap(st.snap));
 
   // ---------- eventos ----------
-  $("lista").addEventListener("click", e => { const f = e.target.closest(".fila"); if (f) seleccionar(f.dataset.id, true); });
-  $("lista").addEventListener("keydown", e => { if (e.key === "Enter") { const f = e.target.closest(".fila"); if (f) seleccionar(f.dataset.id, true); } });
-  $("mejor").onclick = () => st.stats && seleccionar(st.stats.mejor.e.id, true);
-  document.querySelectorAll("[data-radio]").forEach(b => b.onclick = () => { st.radio = +b.dataset.radio; guardar("radio", st.radio); refrescar(true); });
-  document.querySelectorAll("[data-orden]").forEach(b => b.onclick = () => { st.orden = b.dataset.orden; guardar("orden", st.orden); refrescar(false); $("lista").scrollTop = 0; });
-  $("soloAbiertas").onclick = () => { st.soloAbiertas = !st.soloAbiertas; guardar("abiertas", st.soloAbiertas); refrescar(false); };
-  $("deposito").onclick = () => { st.litros = LITROS_OPC[(LITROS_OPC.indexOf(st.litros) + 1) % LITROS_OPC.length]; guardar("litros", st.litros); pintarControles(); pintarCabecera(); };
-  $("pA").onclick = () => { st.prod = "A"; guardar("prod", "A"); refrescar(false); };
-  $("pP").onclick = () => { st.prod = "P"; guardar("prod", "P"); refrescar(false); };
+  $("lista").addEventListener("click", e => { const f = e.target.closest(".fila"); if (f) abrirDetalle(f.dataset.id, true); });
+  $("lista").addEventListener("keydown", e => { if (e.key === "Enter") { const f = e.target.closest(".fila"); if (f) abrirDetalle(f.dataset.id, true); } });
+  $("mejor").onclick = () => st.stats && abrirDetalle(st.stats.mejor.e.id, true);
+  document.querySelectorAll("[data-radio]").forEach(b => b.onclick = () => { st.radio = +b.dataset.radio; grabar("radio", st.radio); refrescar(true); });
+  document.querySelectorAll("[data-orden]").forEach(b => b.onclick = () => { st.orden = b.dataset.orden; grabar("orden", st.orden); refrescar(false); $("lista").scrollTop = 0; });
+  $("soloAbiertas").onclick = () => { st.abiertas = !st.abiertas; grabar("abiertas", st.abiertas); refrescar(false); };
+  $("deposito").onclick = () => { st.litros = LITROS[(LITROS.indexOf(st.litros) + 1) % LITROS.length]; grabar("litros", st.litros); pintarControles(); if (st.cargado) { pintarCabecera(); if (st.sel) { const it = st.vis.find(x => x.e.id === st.sel); if (it) pintarDetalle(it); } } };
+  $("pA").onclick = () => { st.prod = "A"; grabar("prod", "A"); refrescar(false); };
+  $("pP").onclick = () => { st.prod = "P"; grabar("prod", "P"); refrescar(false); };
 
   let zAnt = mapa.getZoom();
-  mapa.on("zoomend", () => { const z = mapa.getZoom(); if ((z >= 13) !== (zAnt >= 13)) pintarMapa(); zAnt = z; });
+  mapa.on("zoomend", () => { const z = mapa.getZoom(); if ((z >= 13.5) !== (zAnt >= 13.5)) pintarMapa(); zAnt = z; });
   mapa.on("moveend", () => {
-    const d = dist(st.centro, [mapa.getCenter().lat, mapa.getCenter().lng]);
-    $("buscarAqui").hidden = d < Math.max(1, st.radio * .5);
+    const c = mapa.getCenter();
+    if (st.auto || !st.ref) { st.ref = [c.lat, c.lng]; st.auto = false; $("buscarAqui").hidden = true; return; }
+    const d = dist(st.ref, [c.lat, c.lng]);
+    $("buscarAqui").hidden = !st.cargado || d < Math.max(1.2, st.radio * .55);
   });
   $("buscarAqui").onclick = () => {
-    const c = mapa.getCenter(); st.centro = [c.lat, c.lng]; guardar("centro", st.centro);
-    $("buscarAqui").hidden = true; $("btnYo").classList.remove("activo"); st.sel = null; refrescar(false);
+    const c = mapa.getCenter(); st.centro = [c.lat, c.lng]; st.ref = st.centro; st.manual = true; grabar("centro", st.centro);
+    $("buscarAqui").hidden = true; $("btnYo").classList.remove("on"); cerrarDetalle(); refrescar(false);
   };
 
   function ponerYo(p) {
     if (marcaYo) marcaYo.setLatLng(p);
-    else marcaYo = L.marker(p, { icon: L.divIcon({ className: "divpin", html: '<div class="yo"></div>', iconSize: [0, 0] }), interactive: false, zIndexOffset: 3000 }).addTo(mapa);
+    else marcaYo = L.marker(p, { icon: L.divIcon({ className: "divpin", html: '<div class="yo"></div>', iconSize: [0, 0] }), interactive: false, zIndexOffset: 9000 }).addTo(mapa);
   }
-  function localizar(primera) {
-    if (!navigator.geolocation) { if (!primera) aviso("Tu navegador no permite ubicación"); return Promise.resolve(false); }
-    return new Promise(res => navigator.geolocation.getCurrentPosition(pos => {
-      st.yo = [pos.coords.latitude, pos.coords.longitude]; st.centro = st.yo; guardar("centro", st.centro);
-      ponerYo(st.yo); $("btnYo").classList.add("activo"); $("buscarAqui").hidden = true; res(true);
+  function localizar(avisar) {
+    if (!navigator.geolocation) { if (avisar) toast("Este navegador no permite la ubicación"); return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      st.yo = [pos.coords.latitude, pos.coords.longitude]; ponerYo(st.yo);
+      if (!st.manual || avisar) {
+        st.centro = st.yo; st.manual = false; grabar("centro", st.centro);
+        $("btnYo").classList.add("on"); $("buscarAqui").hidden = true; cerrarDetalle(); refrescar(true);
+      }
     }, err => {
-      aviso(err.code === 1 ? "Sin permiso de ubicación: mostrando tu última zona" : "No se pudo obtener tu ubicación");
-      res(false);
-    }, { enableHighAccuracy: true, timeout: 9000, maximumAge: 60000 }));
+      if (avisar || err.code === 1) toast(err.code === 1 ? "Activa la ubicación para ver lo que tienes cerca" : "No se pudo obtener tu ubicación");
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
   }
-  $("btnYo").onclick = async () => { if (await localizar(false)) { st.sel = null; refrescar(true); } };
+  $("btnYo").onclick = () => localizar(true);
 
-  // ---------- arranque ----------
-  (async () => {
-    altoHoja();
-    // animación de dígitos mientras carga
-    const dg = $("digs"); let n = 0;
-    const tick = setInterval(() => { n = (n + 7) % 1000; dg.textContent = "1," + String(n).padStart(3, "0"); }, 60);
-    const ubic = localizar(true);
-    try {
-      const d = await cargarDatos();
-      st.estaciones = d.estaciones;
-      const m = String(d.actualizado || "").match(/(\d{1,2})\/(\d{1,2})\/\d{4}\s+(\d{1,2}:\d{2})/);
-      $("actualizado").textContent = m ? `Precios ${m[1].padStart(2, "0")}/${m[2].padStart(2, "0")} · ${m[3]} h` : "Precios del Ministerio";
-    } catch {
-      clearInterval(tick); dg.textContent = "--,---"; $("cargandoTxt").textContent = "No se pudieron cargar los precios";
-      return;
+  // ---------- arranque (el mapa se ve desde el primer momento) ----------
+  ponerSnap(1);
+  pintarControles();
+  localizar(false);
+  cargar().then(d => {
+    st.est = d.est; st.cargado = true;
+    const m = String(d.fecha || "").match(/(\d{1,2})\/(\d{1,2})\/\d{4}\s+(\d{1,2}):(\d{2})/);
+    $("actualizado").innerHTML = `<span class="vivo"></span>` + (m ? `Precios de hoy ${m[3]}:${m[4]} h` : "Precios oficiales");
+    if (m) {
+      const hoy = new Date(); if (+m[1] !== hoy.getDate() || +m[2] !== hoy.getMonth() + 1) $("actualizado").innerHTML = `<span class="vivo" style="background:var(--mid)"></span>Precios del ${m[1]}/${m[2]} · ${m[3]}:${m[4]} h`;
     }
-    await ubic;
-    clearInterval(tick);
     refrescar(true);
-    $("cargando").classList.add("fuera");
-    setTimeout(() => $("cargando").remove(), 500);
-  })();
+  }).catch(() => {
+    $("actualizado").textContent = "No se pudieron cargar los precios";
+    $("lista").innerHTML = `<li class="vacio"><b>Sin conexión con los precios</b>Revisa la conexión y vuelve a abrir la app.</li>`;
+    $("mejorNom").textContent = "Sin datos";
+  });
 })();
 </script>
 </body>
