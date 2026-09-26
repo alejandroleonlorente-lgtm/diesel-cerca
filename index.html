@@ -25,7 +25,7 @@
   --good:#0B8F55; --good-soft:#E4F5EC; --mid:#B7791F; --mid-soft:#FBF1E0; --bad:#D2353C; --bad-soft:#FCE9EA;
   /* colores de precio (se reutilizan en marcadores y fichas) */
   --led-good:#0B8F55; --led-mid:#B7791F; --led-bad:#D2353C; --led-dim:#9AA5AE; --totem:#FFFFFF;
-  --glass:rgba(255,255,255,.92);
+  --glass:#FFFFFF;
   --sh-1:0 1px 2px rgba(16,24,32,.06),0 2px 8px rgba(16,24,32,.06);
   --sh-2:0 12px 36px rgba(16,24,32,.14),0 2px 6px rgba(16,24,32,.06);
   --display:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
@@ -52,13 +52,13 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 /* ---------- barra superior ---------- */
 .top{position:fixed;top:0;left:0;right:0;z-index:500;padding:calc(var(--st) + 8px) 10px 0;display:flex;gap:8px;align-items:center;pointer-events:none}
 .top > *{pointer-events:auto}
-.marca{display:flex;align-items:center;gap:9px;min-width:0;flex:1;background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);border-radius:14px;padding:6px 10px 6px 6px;box-shadow:var(--sh-1)}
+.marca{display:flex;align-items:center;gap:9px;min-width:0;flex:1;background:var(--glass);border-radius:14px;padding:6px 10px 6px 6px;box-shadow:var(--sh-1)}
 .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(145deg,#2B74FF 0%,#1B55D6 55%,#0E3AA6 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 6px rgba(27,85,214,.35);display:grid;place-items:center;flex:none}
 .marca-txt{min-width:0}
 .marca-txt b{display:block;font:800 15px/1.05 var(--body);letter-spacing:-.01em;white-space:nowrap}
 .marca-txt > span{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .vivo{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:5px;vertical-align:1px;box-shadow:0 0 0 2.5px var(--good-soft)}
-.seg{display:flex;background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-radius:12px;padding:3px;box-shadow:var(--sh-1);flex:none}
+.seg{display:flex;background:var(--glass);border-radius:12px;padding:3px;box-shadow:var(--sh-1);flex:none}
 .seg button{padding:8px 11px;border-radius:9px;font:700 13px/1 var(--body);color:var(--muted);transition:background .2s,color .2s}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 
@@ -72,7 +72,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .toast{position:fixed;left:50%;top:calc(var(--st) + 62px);transform:translateX(-50%);z-index:700;background:var(--ink);color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;max-width:calc(100% - 32px);box-shadow:var(--sh-2)}
 
 /* ---------- marcadores ---------- */
-.pin{position:relative;display:inline-flex;align-items:center;gap:4px;transform:translate(-50%,calc(-100% - 5px));background:#fff;border-radius:8px;padding:4px 7px 3px 6px;box-shadow:0 2px 8px rgba(16,24,32,.18),0 0 0 1px rgba(16,24,32,.06);white-space:nowrap;transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.pin{position:relative;display:inline-flex;align-items:center;gap:4px;transform:translate(-50%,calc(-100% - 5px));background:#fff;border-radius:8px;padding:4px 7px 3px 6px;box-shadow:0 2px 8px rgba(16,24,32,.18),0 0 0 1px rgba(16,24,32,.06);white-space:nowrap}
 .pin::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:#fff}
 .pin i{width:6px;height:6px;border-radius:50%;background:var(--mid)}
 .pin b{font:700 14.5px/1 var(--display);font-variant-numeric:tabular-nums;color:var(--ink)}
@@ -80,6 +80,9 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .pin .mejor{display:none}
 .pin.top1{background:var(--good)} .pin.top1::after{border-top-color:var(--good)}
 .pin.top1 i{background:#fff} .pin.top1 b{color:#fff}
+.pin.pfav{box-shadow:0 2px 8px rgba(16,24,32,.18),0 0 0 1.5px #F5A300}
+.pin .st{display:none;width:11px;height:11px;margin-right:1px}
+.pin.pfav .st{display:block} .pin.pfav i{display:none}
 .pin.sel{background:var(--ink);transform:translate(-50%,calc(-100% - 5px)) scale(1.18);z-index:9}
 .pin.sel::after{border-top-color:var(--ink)} .pin.sel b{color:#fff}
 .punto{width:10px;height:10px;border-radius:50%;background:var(--mid);border:2px solid #fff;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(16,24,32,.35)}
@@ -99,6 +102,22 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .titulo-zona{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .titulo-zona h2{margin:0;font:800 18px/1.1 var(--body);letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .titulo-zona .n{font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* favoritas */
+.favs{display:flex;flex-direction:column;background:var(--surface-2);border-radius:14px;overflow:hidden}
+.fav{display:grid;grid-template-columns:16px 1fr auto;gap:10px;align-items:center;padding:8px 12px;text-align:left;width:100%}
+.fav + .fav{border-top:1px solid var(--line)}
+.fav .st{width:16px;height:16px;color:#F5A300}
+.fav .n{font:700 14px/1.2 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fav .l{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.fav .der{text-align:right}
+.fav .pr{font:700 20px/1 var(--display);font-variant-numeric:tabular-nums}
+.fav .df{display:block;font:600 11px/1 var(--body);margin-top:3px;color:var(--muted);white-space:nowrap}
+.fav .df.best{color:var(--good)}
+.estrella{width:32px;height:32px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;color:var(--faint);align-self:start}
+.estrella svg{width:17px;height:17px}
+.estrella[aria-pressed="true"]{color:#F5A300;background:#FFF5DC}
+.det-acc{display:flex;gap:6px;align-self:start}
 
 /* tarjeta de la mejor */
 .mejor-card{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--good-soft);border-radius:14px;padding:9px 10px 9px 12px;text-align:left;width:100%}
@@ -232,6 +251,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
   <div class="vista" id="vLista">
     <div class="cab" id="cabLista">
+      <div class="favs" id="favs" hidden></div>
       <div class="titulo-zona">
         <h2 id="zona">Cerca de ti</h2>
         <span class="n" id="cuantas"></span>
@@ -290,7 +310,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   const st = {
     est: [], centro: leer("centro", PATERNA), yo: null, manual: false,
     radio: [5, 10, 20, 30, 50].includes(leer("radio", 10)) ? leer("radio", 10) : 10, orden: leer("orden", "precio"), prod: leer("prod", "A"),
-    abiertas: leer("abiertas", false), litros: leer("litros", 50),
+    abiertas: leer("abiertas", false), favs: leer("favs", ["9329", "16216"]), litros: leer("litros", 50),
     vis: [], stats: null, sel: null, snap: 1, cargado: false
   };
 
@@ -307,6 +327,9 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     return s;
   }
   const nombre = m => m === "Independiente" ? m : String(m).toLowerCase().split(/\s+/).map(w => w.length <= 3 && !/^(de|del|la|el|los|las|y)$/.test(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const art = z => z.replace(/^(.*?)\s*\((el|la|els|les|los|las|l')\)$/i, (m, a, b) => b.charAt(0).toUpperCase() + b.slice(1).toLowerCase() + (b.endsWith("'") ? "" : " ") + a);
+  const localidad = l => art(tit(l));
+  const ESTRELLA = '<svg class="st" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.1l-5.7 3.2 1.2-6.4-4.7-4.4 6.4-.8z"/></svg>';
   const COL = { REPSOL: "#F07C00", CEPSA: "#D6282E", MOEVE: "#00857C", BP: "#009A44", SHELL: "#E8B400", GALP: "#EE5A24", PLENOIL: "#00A3DA", BALLENOIL: "#1B75BB", PETROPRIX: "#E30613", AVIA: "#C4161C", CARREFOUR: "#1E4FA1", ALCAMPO: "#D1242A", PLENERGY: "#6A2C91", ESCLATOIL: "#2E9A47", "LOW COST": "#333F48", DISA: "#E2001A" };
   function colorMarca(n) {
     const u = n.toUpperCase();
@@ -385,8 +408,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     const tono = esOscuro() ? "Dark" : "Light";
     const base = n => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_${tono}_Gray_${n}/MapServer/tile/{z}/{y}/{x}`;
     teselas = L.layerGroup([
-      L.tileLayer(base("Base"), { maxNativeZoom: 16, maxZoom: 19, attribution: "Mapa © Esri · Precios: MITECO" }),
-      L.tileLayer(base("Reference"), { maxNativeZoom: 16, maxZoom: 19 })
+      L.tileLayer(base("Base"), { maxNativeZoom: 16, maxZoom: 19, updateWhenZooming: false, keepBuffer: 3, attribution: "Mapa © Esri · Precios: MITECO" }),
+      L.tileLayer(base("Reference"), { maxNativeZoom: 16, maxZoom: 19, updateWhenZooming: false, keepBuffer: 3 })
     ]).addTo(mapa);
     
   }
@@ -410,7 +433,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     }
     const ps = v.map(x => x.p).sort((a, b) => a - b);
     const q = f => ps[Math.min(ps.length - 1, Math.floor(f * (ps.length - 1)))];
-    const q1 = q(.25), q3 = q(.75);
+    const q1 = q(.25), q3 = q(.75); st.q1 = q1; st.q3 = q3;
     for (const x of v) x.t = x.p <= q1 ? "g" : x.p >= q3 ? "r" : "m";
     const porPrecio = [...v].sort((a, b) => a.p - b.p || a.d - b.d);
     porPrecio.forEach((x, i) => x.rk = i + 1);
@@ -419,26 +442,61 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     // Nombre de la zona: localidad más repetida entre las 5 más cercanas
     const cerca = [...v].sort((a, b) => a.d - b.d).slice(0, 5);
     const cnt = {}; cerca.forEach(x => { const l = tit(x.e.loc); cnt[l] = (cnt[l] || 0) + 1; });
-    const art = z => z.replace(/^(.*?)\s*\((el|la|els|les|los|las|l')\)$/i, (m, a, b) => b.charAt(0).toUpperCase() + b.slice(1).toLowerCase() + (b.endsWith("'") ? "" : " ") + a);
     st.zona = art(Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || "Esta zona");
   }
 
   // ---------- pintar ----------
   const acc = () => getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+  const lienzo = L.canvas({ padding: .4 });
+  const capaPins = L.layerGroup().addTo(mapa);
+  const COLT = { g: "#0B8F55", m: "#C98A1B", r: "#D2353C" };
+  function itemPorId(id) {
+    const v = st.vis.find(x => x.e.id === id); if (v) return v;
+    const e = st.est.find(x => x.id === id); if (!e) return null;
+    const p = e[st.prod]; if (p == null) return null;
+    return { e, p, d: dist(st.yo || st.centro, [e.lat, e.lon]), ab: abierta(e.hor), delta: e["d" + st.prod], marca: marca(e.rot), rk: null,
+      t: st.q1 == null ? "m" : p <= st.q1 ? "g" : p >= st.q3 ? "r" : "m" };
+  }
   function pintarMapa() {
     capa.clearLayers();
     if (circulo) mapa.removeLayer(circulo);
-    circulo = L.circle(st.centro, { radius: st.radio * 1000, color: acc(), weight: 1.5, opacity: .5, fillColor: acc(), fillOpacity: .035, dashArray: "3 7", interactive: false }).addTo(mapa);
-    const z = mapa.getZoom();
+    circulo = L.circle(st.centro, { radius: st.radio * 1000, color: acc(), weight: 1.5, opacity: .5, fillColor: acc(), fillOpacity: .03, dashArray: "3 7", interactive: false, renderer: lienzo }).addTo(mapa);
     for (const x of st.vis) {
-      const s = x.e.id === st.sel;
-      const pill = z >= 13.5 || x.rk <= 8 || s;
-      const html = pill
-        ? `<div class="pin ${x.t === "g" ? "g" : x.t === "r" ? "r" : ""} ${x.rk === 1 ? "top1" : ""} ${s ? "sel" : ""}"><i></i><b>${eur(x.p)}</b></div>`
-        : `<div class="punto ${x.t === "g" ? "g" : x.t === "r" ? "r" : ""}"></div>`;
-      L.marker([x.e.lat, x.e.lon], { icon: L.divIcon({ className: "divpin", html, iconSize: [0, 0] }), zIndexOffset: s ? 5000 : pill ? 2000 - x.rk : -x.rk, keyboard: false })
+      L.circleMarker([x.e.lat, x.e.lon], { renderer: lienzo, radius: 5, weight: 2, color: "#fff", fillColor: COLT[x.t], fillOpacity: 1 })
         .on("click", () => abrirDetalle(x.e.id, false)).addTo(capa);
     }
+    pintarPins();
+  }
+  function pintarPins() {
+    capaPins.clearLayers();
+    const z = mapa.getZoom(), b = mapa.getBounds().pad(.2);
+    const ids = new Set(), lista = [];
+    const meter = x => { if (x && !ids.has(x.e.id)) { ids.add(x.e.id); lista.push(x); } };
+    st.favs.forEach(id => meter(itemPorId(id)));
+    if (st.sel) meter(itemPorId(st.sel));
+    st.vis.slice().sort((a, b) => a.rk - b.rk).forEach(x => {
+      if (x.rk <= 8 || (z >= 13.5 && lista.length < 70 && b.contains([x.e.lat, x.e.lon]))) meter(x);
+    });
+    for (const x of lista) {
+      const s = x.e.id === st.sel, fav = st.favs.includes(x.e.id);
+      const html = `<div class="pin ${x.t === "g" ? "g" : x.t === "r" ? "r" : ""} ${x.rk === 1 ? "top1" : ""} ${fav ? "pfav" : ""} ${s ? "sel" : ""}">${fav ? ESTRELLA.replace('class="st"', 'class="st" style="color:#F5A300"') : ""}<i></i><b>${eur(x.p)}</b></div>`;
+      L.marker([x.e.lat, x.e.lon], { icon: L.divIcon({ className: "divpin", html, iconSize: [0, 0] }), zIndexOffset: s ? 5000 : fav ? 4000 : 2000 - (x.rk || 0), keyboard: false })
+        .on("click", () => abrirDetalle(x.e.id, false)).addTo(capaPins);
+    }
+  }
+
+  function pintarFavs() {
+    const el = $("favs");
+    const items = st.favs.map(itemPorId).filter(Boolean);
+    if (!items.length) { el.hidden = true; return; }
+    const min = st.stats ? st.stats.min : null;
+    el.hidden = false;
+    el.innerHTML = items.map(x => {
+      const df = min == null ? "" : x.p - min < .0005 ? `<span class="df best">La más barata</span>` : `<span class="df">+${eur(x.p - min)} vs mejor</span>`;
+      return `<button class="fav" data-id="${esc(x.e.id)}">${ESTRELLA}
+        <div style="min-width:0"><div class="n">${esc(nombre(x.marca))}</div><div class="l">${esc(localidad(x.e.loc))} · ${km(x.d)}</div></div>
+        <div class="der"><div class="pr" style="color:${x.t === "g" ? "var(--good)" : x.t === "r" ? "var(--bad)" : "var(--ink)"}">${eur(x.p)}</div>${df}</div></button>`;
+    }).join("");
   }
 
   const deltaHtml = d => d == null ? "" : Math.abs(d) < .0005 ? `<span class="delta i">= ayer</span>` : d < 0 ? `<span class="delta b">▼ ${eur(-d)}</span>` : `<span class="delta s">▲ ${eur(d)}</span>`;
@@ -495,8 +553,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   function refrescar(encuadrar) {
     pintarControles();
     if (!st.cargado) return;
-    calcular(); pintarCabecera(); pintarLista(); pintarMapa();
-    if (st.sel) { const it = st.vis.find(x => x.e.id === st.sel); if (it) pintarDetalle(it); else cerrarDetalle(); }
+    calcular(); pintarCabecera(); pintarFavs(); pintarLista(); pintarMapa();
+    if (st.sel) { const it = itemPorId(st.sel); if (it) pintarDetalle(it); else cerrarDetalle(); }
     if (encuadrar) encuadre();
   }
   function padInferior() { return innerWidth >= 900 ? 20 : alturaSnap(st.snap) + 16; }
@@ -520,12 +578,12 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       <div class="det-cab" id="detCab">
         ${monoHtml(x, 0)}
         <div style="min-width:0"><h3>${esc(nombre(x.marca))}</h3><div class="dir">${esc(tit(e.dir))}, ${esc(tit(e.loc))}</div></div>
-        <button class="cerrar" id="cerrarDet" aria-label="Volver a la lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <div class="det-acc"><button class="estrella" id="favDet" aria-pressed="${st.favs.includes(e.id)}" aria-label="Favorita">${ESTRELLA.replace(' class="st"', "")}</button><button class="cerrar" id="cerrarDet" aria-label="Volver a la lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       </div>
       <div class="tablero">${tot(st.prod, st.prod === "A" ? "Gasóleo A" : "Gasóleo Premium")}${tot(otro, otro === "A" ? "Gasóleo A" : "Gasóleo Premium")}</div>
       <div class="hechos">
         <div><div class="cap">Distancia</div><div class="v">${km(x.d)}</div></div>
-        <div><div class="cap">Puesto</div><div class="v">${x.rk}º <span style="font-size:13px;color:var(--muted)">de ${st.vis.length}</span></div></div>
+        <div><div class="cap">Puesto</div><div class="v">${x.rk ? `${x.rk}º <span style="font-size:13px;color:var(--muted)">de ${st.vis.length}</span>` : `<span style="font-size:14px;color:var(--muted)">Fuera del radio</span>`}</div></div>
         <div><div class="cap">Vs media</div><div class="v ${dif <= 0 ? "g" : "r"}">${dif <= 0 ? "−" : "+"}${eur(Math.abs(dif) * st.litros, 2)} €</div></div>
       </div>
       <div class="horario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div>${estHtml(x.ab)} ${esc(horarioBonito(e.hor))}</div></div>
@@ -536,28 +594,36 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
         <a class="btn sec" href="https://waze.com/ul?ll=${url}&navigate=yes" target="_blank" rel="noopener">Waze</a>
       </div>`;
     $("cerrarDet").onclick = cerrarDetalle;
+    $("favDet").onclick = () => {
+      const i = st.favs.indexOf(e.id);
+      if (i >= 0) st.favs.splice(i, 1); else st.favs.push(e.id);
+      grabar("favs", st.favs);
+      $("favDet").setAttribute("aria-pressed", st.favs.includes(e.id));
+      pintarFavs(); pintarPins();
+      toast(i >= 0 ? "Quitada de favoritas" : "Añadida a favoritas", 1600);
+    };
   }
   function abrirDetalle(id, volar) {
-    const x = st.vis.find(v => v.e.id === id); if (!x) return;
+    const x = itemPorId(id); if (!x) return;
     st.sel = id;
     pintarDetalle(x);
     $("vLista").hidden = true; $("vDet").hidden = false; $("det").scrollTop = 0;
     if (innerWidth < 900) ponerSnap(1);
-    pintarMapa();
+    pintarPins();
     const pt = mapa.project([x.e.lat, x.e.lon], Math.max(mapa.getZoom(), 15));
     const off = innerWidth >= 900 ? [-210, 0] : [0, (alturaSnap(1) - 60) / 2];
     const destino = mapa.unproject(pt.add(off), Math.max(mapa.getZoom(), 15));
     if (volar) mapa.flyTo(destino, Math.max(mapa.getZoom(), 15), { duration: .6 }); else mapa.panTo(destino, { animate: true });
   }
   function cerrarDetalle() {
-    st.sel = null; $("vDet").hidden = true; $("vLista").hidden = false; pintarMapa();
+    st.sel = null; $("vDet").hidden = true; $("vLista").hidden = false; if (st.cargado) pintarPins();
   }
 
   // ---------- hoja arrastrable ----------
   const hoja = $("hoja");
   function alturaSnap(i) {
     const H = innerHeight;
-    return [Math.min(236, H * .32), Math.min(H * .56, 520), H * .86][i] | 0;
+    return [Math.min(300, H * .38), Math.min(H * .6, 560), H * .86][i] | 0;
   }
   function ponerSnap(i) {
     st.snap = i;
@@ -605,16 +671,17 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   // ---------- eventos ----------
   $("lista").addEventListener("click", e => { const f = e.target.closest(".fila"); if (f) abrirDetalle(f.dataset.id, true); });
   $("lista").addEventListener("keydown", e => { if (e.key === "Enter") { const f = e.target.closest(".fila"); if (f) abrirDetalle(f.dataset.id, true); } });
+  $("favs").addEventListener("click", e => { const f = e.target.closest(".fav"); if (f) abrirDetalle(f.dataset.id, true); });
   $("mejor").onclick = () => st.stats && abrirDetalle(st.stats.mejor.e.id, true);
   document.querySelectorAll("[data-radio]").forEach(b => b.onclick = () => { st.radio = +b.dataset.radio; grabar("radio", st.radio); refrescar(true); });
   document.querySelectorAll("[data-orden]").forEach(b => b.onclick = () => { st.orden = b.dataset.orden; grabar("orden", st.orden); refrescar(false); $("lista").scrollTop = 0; });
   $("soloAbiertas").onclick = () => { st.abiertas = !st.abiertas; grabar("abiertas", st.abiertas); refrescar(false); };
-  $("deposito").onclick = () => { st.litros = LITROS[(LITROS.indexOf(st.litros) + 1) % LITROS.length]; grabar("litros", st.litros); pintarControles(); if (st.cargado) { pintarCabecera(); if (st.sel) { const it = st.vis.find(x => x.e.id === st.sel); if (it) pintarDetalle(it); } } };
+  $("deposito").onclick = () => { st.litros = LITROS[(LITROS.indexOf(st.litros) + 1) % LITROS.length]; grabar("litros", st.litros); pintarControles(); if (st.cargado) { pintarCabecera(); pintarFavs(); if (st.sel) { const it = itemPorId(st.sel); if (it) pintarDetalle(it); } } };
   $("pA").onclick = () => { st.prod = "A"; grabar("prod", "A"); refrescar(false); };
   $("pP").onclick = () => { st.prod = "P"; grabar("prod", "P"); refrescar(false); };
 
   let zAnt = mapa.getZoom();
-  mapa.on("zoomend", () => { const z = mapa.getZoom(); if ((z >= 13.5) !== (zAnt >= 13.5)) pintarMapa(); zAnt = z; });
+  mapa.on("moveend", () => { const z = mapa.getZoom(); if (st.cargado && (z >= 13.5 || zAnt >= 13.5)) pintarPins(); zAnt = z; });
   mapa.on("dragstart", () => { st.tocado = true; });
   mapa.on("moveend", () => {
     const c = mapa.getCenter();
