@@ -399,9 +399,12 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   let teselas;
   function ponerTeselas() {
     if (teselas) mapa.removeLayer(teselas);
-    teselas = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${esOscuro() ? "dark_all" : "rastertiles/voyager"}/{z}/{x}/{y}{r}.png`, {
-      subdomains: "abcd", maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> · © <a href="https://carto.com/attributions">CARTO</a> · Precios: MITECO'
-    }).addTo(mapa);
+    const tono = esOscuro() ? "Dark" : "Light";
+    const base = n => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_${tono}_Gray_${n}/MapServer/tile/{z}/{y}/{x}`;
+    teselas = L.layerGroup([
+      L.tileLayer(base("Base"), { maxNativeZoom: 16, maxZoom: 19, attribution: "Mapa © Esri · Precios: MITECO" }),
+      L.tileLayer(base("Reference"), { maxNativeZoom: 16, maxZoom: 19 })
+    ]).addTo(mapa);
     document.querySelector('meta[name="theme-color"]').content = esOscuro() ? "#0B1014" : "#EDF0F2";
   }
   ponerTeselas();
@@ -433,7 +436,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     // Nombre de la zona: localidad más repetida entre las 5 más cercanas
     const cerca = [...v].sort((a, b) => a.d - b.d).slice(0, 5);
     const cnt = {}; cerca.forEach(x => { const l = tit(x.e.loc); cnt[l] = (cnt[l] || 0) + 1; });
-    st.zona = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || "Esta zona";
+    const art = z => z.replace(/^(.*?)\s*\((el|la|els|les|los|las|l')\)$/i, (m, a, b) => b.charAt(0).toUpperCase() + b.slice(1).toLowerCase() + (b.endsWith("'") ? "" : " ") + a);
+    st.zona = art(Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || "Esta zona");
   }
 
   // ---------- pintar ----------
@@ -515,7 +519,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   }
   function padInferior() { return innerWidth >= 900 ? 20 : alturaSnap(st.snap) + 16; }
   function encuadre() {
-    st.auto = true;
+    st.tocado = false; $("buscarAqui").hidden = true;
     mapa.fitBounds(L.latLng(st.centro).toBounds(st.radio * 2000), { paddingTopLeft: [innerWidth >= 900 ? 440 : 16, 80], paddingBottomRight: [16, padInferior()], animate: true });
   }
 
@@ -561,7 +565,6 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     const pt = mapa.project([x.e.lat, x.e.lon], Math.max(mapa.getZoom(), 15));
     const off = innerWidth >= 900 ? [-210, 0] : [0, (alturaSnap(1) - 60) / 2];
     const destino = mapa.unproject(pt.add(off), Math.max(mapa.getZoom(), 15));
-    st.auto = true;
     if (volar) mapa.flyTo(destino, Math.max(mapa.getZoom(), 15), { duration: .6 }); else mapa.panTo(destino, { animate: true });
   }
   function cerrarDetalle() {
@@ -630,14 +633,15 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
   let zAnt = mapa.getZoom();
   mapa.on("zoomend", () => { const z = mapa.getZoom(); if ((z >= 13.5) !== (zAnt >= 13.5)) pintarMapa(); zAnt = z; });
+  mapa.on("dragstart", () => { st.tocado = true; });
   mapa.on("moveend", () => {
     const c = mapa.getCenter();
-    if (st.auto || !st.ref) { st.ref = [c.lat, c.lng]; st.auto = false; $("buscarAqui").hidden = true; return; }
-    const d = dist(st.ref, [c.lat, c.lng]);
-    $("buscarAqui").hidden = !st.cargado || d < Math.max(1.2, st.radio * .55);
+    if (!st.tocado) return;
+    const d = dist(st.centro, [c.lat, c.lng]);
+    $("buscarAqui").hidden = !st.cargado || d < Math.max(1.5, st.radio * .5);
   });
   $("buscarAqui").onclick = () => {
-    const c = mapa.getCenter(); st.centro = [c.lat, c.lng]; st.ref = st.centro; st.manual = true; grabar("centro", st.centro);
+    const c = mapa.getCenter(); st.centro = [c.lat, c.lng]; st.manual = true; st.tocado = false; grabar("centro", st.centro);
     $("buscarAqui").hidden = true; $("btnYo").classList.remove("on"); cerrarDetalle(); refrescar(false);
   };
 
