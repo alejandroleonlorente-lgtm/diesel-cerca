@@ -156,6 +156,11 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .fila:active{background:var(--surface-2)}
 @media (hover:hover){.fila:hover{background:var(--surface-2)}}
 .mono{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:800 12px/1 var(--body);letter-spacing:.01em;color:#fff;position:relative;flex:none}
+.mono.lg{background:#fff!important;box-shadow:inset 0 0 0 1px var(--line)}
+.mono.lg img{width:62%;height:62%;object-fit:contain;border-radius:4px}
+.mono.lg em{display:none;font-style:normal}
+.mono.lg.fb{background:var(--c)!important;box-shadow:none}
+.mono.lg.fb img{display:none} .mono.lg.fb em{display:block}
 .mono .rk{position:absolute;right:-5px;bottom:-5px;min-width:17px;height:17px;border-radius:9px;background:#fff;color:var(--ink-2);box-shadow:0 0 0 1px var(--line);font:700 10px/17px var(--body);text-align:center;padding:0 4px;font-variant-numeric:tabular-nums}
 .fila .nom{font:700 14.5px/1.2 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:capitalize}
 .fila .dir{display:none}
@@ -337,6 +342,9 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     let h = 0; for (const c of u) h = (h * 31 + c.charCodeAt(0)) % 360;
     return `hsl(${h} 32% 38%)`;
   }
+  const DOM = { REPSOL: "repsol.es", CEPSA: "moeve.com", MOEVE: "moeve.com", BP: "bp.com", SHELL: "shell.es", GALP: "galp.com", PLENOIL: "plenoil.es", BALLENOIL: "ballenoil.es", PETROPRIX: "petroprix.com", CARREFOUR: "carrefour.es", ALCAMPO: "alcampo.es", PLENERGY: "plenergy.es", EROSKI: "eroski.es", DISA: "disagrupo.es", GASEXPRESS: "gasexpress.es", "LOW COST REPOSTAJE": "lowcostrepostaje.com", "PETRO7": "petro7.es", "Q8": "q8.es", "VALCARCE": "valcarce.es", "AVIA": "avia.es" };
+  function dominio(n) { const u = n.toUpperCase(); for (const k in DOM) if (u === k || u.startsWith(k + " ") || u.startsWith(k)) return DOM[k]; return null; }
+  window.dcLogo = img => { if (img.naturalWidth < 32) img.parentNode.classList.add("fb"); };
   const iniciales = n => n === "Independiente" ? "IND" : n.replace(/[^A-Za-zÁÉÍÓÚÑ0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase() || "·";
 
   function dist(a, b) {
@@ -501,7 +509,11 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
   const deltaHtml = d => d == null ? "" : Math.abs(d) < .0005 ? `<span class="delta i">= ayer</span>` : d < 0 ? `<span class="delta b">▼ ${eur(-d)}</span>` : `<span class="delta s">▲ ${eur(d)}</span>`;
   const estHtml = a => a === true ? `<span class="est ab">Abierta</span>` : a === false ? `<span class="est ce">Cerrada</span>` : "";
-  const monoHtml = (x, rk) => `<span class="mono" style="background:${colorMarca(x.marca)}">${esc(iniciales(x.marca))}${rk ? `<span class="rk">${rk}</span>` : ""}</span>`;
+  const monoHtml = (x, rk) => {
+    const c = colorMarca(x.marca), d = dominio(x.marca), badge = rk ? `<span class="rk">${rk}</span>` : "";
+    if (!d) return `<span class="mono" style="background:${c}">${esc(iniciales(x.marca))}${badge}</span>`;
+    return `<span class="mono lg" style="--c:${c}"><img src="https://www.google.com/s2/favicons?domain=${d}&sz=128" alt="" loading="lazy" referrerpolicy="no-referrer" onload="dcLogo(this)" onerror="this.parentNode.classList.add('fb')"><em>${esc(iniciales(x.marca))}</em>${badge}</span>`;
+  };
 
   function pintarLista() {
     const ul = $("lista");
