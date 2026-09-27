@@ -244,7 +244,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#fff" fill-rule="evenodd" d="M12 2.8s-4.6 5.3-4.6 9.1a4.6 4.6 0 0 0 9.2 0c0-3.8-4.6-9.1-4.6-9.1zm0 7.3a1.85 1.85 0 1 0 0 3.7 1.85 1.85 0 0 0 0-3.7z"/><circle cx="12" cy="11.95" r="1.35" fill="#2BE39A"/></svg>
     </div>
     <div class="marca-txt">
-      <b>Diésel Cerca</b>
+      <b id="marcaNom">Diésel Cerca</b>
       <span id="actualizado">Cargando precios…</span>
     </div>
   </div>
@@ -340,10 +340,11 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   const st = {
     est: [], centro: leer("centro", PATERNA), yo: null, manual: false,
     radio: [5, 10, 20, 30, 50].includes(leer("radio", 10)) ? leer("radio", 10) : 10, orden: leer("orden", "precio"), prod: leer("prod", "A"),
-    abiertas: leer("abiertas", false), favs: leer("favs", ["9329", "16216"]), litros: leer("litros", 50),
+    abiertas: leer("abiertas", false), favsPor: { A: leer("favsA", []), P: leer("favsP", []) }, litros: leer("litros", 50),
     vis: [], stats: null, sel: null, snap: 1, cargado: false
   };
 
+  st.favs = st.favsPor[st.prod];
   // ---------- formato ----------
   const eur = (v, d = 3) => v == null ? "–" : v.toFixed(d).replace(".", ",");
   const km = d => d < 1 ? Math.round(d * 1000 / 10) * 10 + " m" : d.toFixed(d < 10 ? 1 : 0).replace(".", ",") + " km";
@@ -408,7 +409,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   // ---------- datos ----------
   const num = s => { if (s == null || s === "") return null; const v = parseFloat(String(s).replace(",", ".")); return isFinite(v) && v > 0 ? v : null; };
   const coord = s => { const v = parseFloat(String(s ?? "").replace(",", ".")); return isFinite(v) ? v : null; };
-  const deCompacto = j => ({ fecha: j.actualizado, est: j.estaciones.map(e => ({ id: String(e[0]), lat: e[1], lon: e[2], A: e[3], P: j.v === 2 ? e[4] : null, dA: e[5], dP: j.v === 2 ? e[6] : null, rot: e[7], dir: e[8], loc: e[9], hor: e[10] })) });
+  const deCompacto = j => ({ gas: j.v === 2, fecha: j.actualizado, est: j.estaciones.map(e => ({ id: String(e[0]), lat: e[1], lon: e[2], A: e[3], P: j.v === 2 ? e[4] : null, dA: e[5], dP: j.v === 2 ? e[6] : null, rot: e[7], dir: e[8], loc: e[9], hor: e[10] })) });
   function deApi(j) {
     const est = [];
     for (const e of j.ListaEESSPrecio || []) {
@@ -521,7 +522,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   function pintarFavs() {
     const el = $("favs");
     const items = st.favs.map(itemPorId).filter(Boolean);
-    const ADD = `<button class="fav-add" id="favAdd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>${items.length ? "Añadir o quitar favoritas" : "Añadir gasolineras favoritas"}</button>`;
+    const ADD = `<button class="fav-add" id="favAdd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>${items.length ? "Añadir o quitar favoritas" : (st.prod === "A" ? "Añadir favoritas de diésel" : "Añadir favoritas de gasolina")}</button>`;
     if (!items.length) { el.hidden = false; el.innerHTML = ADD; return; }
     const min = st.stats ? st.stats.min : null;
     el.hidden = false;
@@ -580,7 +581,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
   function pintarLista() {
     const ul = $("lista");
-    if (!st.vis.length) { ul.innerHTML = `<li class="vacio"><b>Nada en ${st.radio} km</b>Amplía el radio o busca en otra zona.</li>`; return; }
+    if (!st.vis.length) { ul.innerHTML = st.prod === "P" && !st.gas ? `<li class="vacio"><b>Precios de gasolina en camino</b>Se cargan solos en la próxima actualización de precios (cada hora).</li>` : `<li class="vacio"><b>Nada en ${st.radio} km</b>Amplía el radio o busca en otra zona.</li>`; return; }
     ul.innerHTML = st.vis.map(x => `
       <li class="fila" data-id="${esc(x.e.id)}" tabindex="0">
         ${monoHtml(x, x.rk)}
@@ -597,6 +598,11 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     $("mejorEtq").textContent = st.prod === "A" ? "Gasóleo A" : "Gasolina 95";
     $("zona").textContent = s ? st.zona : "Sin resultados";
     $("cuantas").textContent = s ? `${st.vis.length} en ${st.radio} km` : "";
+    if (!s && st.prod === "P" && !st.gas) {
+      $("zona").textContent = "Gasolina en camino"; $("cuantas").textContent = "";
+      $("mejorPrecio").innerHTML = "–,–––<small>€/L</small>"; $("mejorNom").textContent = "Aún sin precios de gasolina"; $("mejorSub").textContent = "Llegan en la próxima actualización automática";
+      $("hist").innerHTML = ""; $("eMin").textContent = $("eMax").textContent = ""; $("eMed").textContent = ""; $("ahorro").textContent = ""; return;
+    }
     if (!s) {
       $("mejorPrecio").innerHTML = "–,–––<small>€/L</small>"; $("mejorNom").textContent = "Nada cerca"; $("mejorSub").textContent = "Prueba con un radio mayor";
       $("hist").innerHTML = ""; $("eMin").textContent = $("eMax").textContent = "–"; $("eMed").textContent = ""; $("ahorro").textContent = ""; return;
@@ -622,6 +628,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     document.querySelectorAll("[data-orden]").forEach(b => b.setAttribute("aria-pressed", b.dataset.orden === st.orden));
     $("soloAbiertas").setAttribute("aria-pressed", st.abiertas);
     $("deposito").textContent = `Depósito ${st.litros} L`;
+    $("marcaNom").textContent = st.prod === "A" ? "Diésel Cerca" : "Gasolina Cerca";
+    document.title = $("marcaNom").textContent;
     $("pA").setAttribute("aria-pressed", st.prod === "A"); $("pP").setAttribute("aria-pressed", st.prod === "P");
   }
 
@@ -672,7 +680,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     $("favDet").onclick = () => {
       const i = st.favs.indexOf(e.id);
       if (i >= 0) st.favs.splice(i, 1); else st.favs.push(e.id);
-      grabar("favs", st.favs);
+      grabar("favs" + st.prod, st.favs);
       $("favDet").setAttribute("aria-pressed", st.favs.includes(e.id));
       pintarFavs(); pintarPins();
       toast(i >= 0 ? "Quitada de favoritas" : "Añadida a favoritas", 1600);
@@ -758,7 +766,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     if (e.target.closest(".star-t")) {
       const i = st.favs.indexOf(id);
       if (i >= 0) st.favs.splice(i, 1); else st.favs.push(id);
-      grabar("favs", st.favs);
+      grabar("favs" + st.prod, st.favs);
       e.target.closest(".star-t").setAttribute("aria-pressed", i < 0);
       pintarFavs(); pintarPins();
       toast(i >= 0 ? "Quitada de favoritas" : "Añadida a favoritas", 1400);
@@ -773,8 +781,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   document.querySelectorAll("[data-orden]").forEach(b => b.onclick = () => { st.orden = b.dataset.orden; grabar("orden", st.orden); refrescar(false); $("lista").scrollTop = 0; });
   $("soloAbiertas").onclick = () => { st.abiertas = !st.abiertas; grabar("abiertas", st.abiertas); refrescar(false); };
   $("deposito").onclick = () => { st.litros = LITROS[(LITROS.indexOf(st.litros) + 1) % LITROS.length]; grabar("litros", st.litros); pintarControles(); if (st.cargado) { pintarCabecera(); pintarFavs(); if (st.sel) { const it = itemPorId(st.sel); if (it) pintarDetalle(it); } } };
-  $("pA").onclick = () => { st.prod = "A"; grabar("prod", "A"); refrescar(false); };
-  $("pP").onclick = () => { st.prod = "P"; grabar("prod", "P"); refrescar(false); };
+  $("pA").onclick = () => { st.prod = "A"; st.favs = st.favsPor.A; grabar("prod", "A"); refrescar(false); };
+  $("pP").onclick = () => { st.prod = "P"; st.favs = st.favsPor.P; grabar("prod", "P"); refrescar(false); };
 
   let zAnt = mapa.getZoom();
   mapa.on("moveend", () => { const z = mapa.getZoom(); if (st.cargado && (z >= 13.5 || zAnt >= 13.5)) pintarPins(); zAnt = z; });
@@ -844,7 +852,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   pintarControles();
   localizar(false);
   cargar().then(d => {
-    st.est = d.est; st.cargado = true;
+    st.est = d.est; st.cargado = true; st.gas = d.gas !== false;
     const m = String(d.fecha || "").match(/(\d{1,2})\/(\d{1,2})\/\d{4}\s+(\d{1,2}):(\d{2})/);
     $("actualizado").innerHTML = `<span class="vivo"></span>` + (m ? `Precios de hoy ${m[3]}:${m[4]} h` : "Precios oficiales");
     if (m) {
