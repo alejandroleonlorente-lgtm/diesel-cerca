@@ -121,6 +121,19 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 .estrella[aria-pressed="true"]{color:#F5A300;background:#FFF5DC}
 .det-acc{display:flex;gap:6px;align-self:start}
 
+.fav-add{display:flex;align-items:center;gap:8px;padding:10px 12px;font:700 13px/1 var(--body);color:var(--accent);width:100%;text-align:left}
+.fav + .fav-add{border-top:1px solid var(--line)}
+.fav-add svg{width:16px;height:16px}
+.bus-cab{flex:none;display:flex;gap:8px;align-items:center;padding:4px 14px 10px;touch-action:none}
+.bus-in{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:12px;padding:0 12px}
+.bus-in svg{width:16px;height:16px;color:var(--muted);flex:none}
+.bus-in input{flex:1;min-width:0;border:0;background:transparent;font:500 16px/1 var(--body);color:var(--ink);padding:11px 0;outline:none}
+.bus-tit{flex:none;padding:0 14px 8px;font-size:12px;color:var(--muted)}
+.fila .star-t{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--faint);background:var(--surface-2)}
+.fila .star-t svg{width:18px;height:18px}
+.fila .star-t[aria-pressed="true"]{color:#F5A300;background:#FFF5DC}
+.fila.b{grid-template-columns:34px 1fr auto auto}
+
 /* tarjeta de la mejor */
 .mejor-card{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--good-soft);border-radius:14px;padding:9px 10px 9px 12px;text-align:left;width:100%}
 .totem{background:transparent;padding:0;min-width:0}
@@ -237,7 +250,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   </div>
   <div class="seg" role="group" aria-label="Carburante">
     <button id="pA" aria-pressed="true">Diésel</button>
-    <button id="pP" aria-pressed="false">Diésel+</button>
+    <button id="pP" aria-pressed="false">Gasolina</button>
   </div>
 </header>
 
@@ -294,6 +307,16 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     <ul class="lista" id="lista">
       <li class="skel"></li><li class="skel"></li><li class="skel"></li>
     </ul>
+  </div>
+
+  <div class="vista" id="vBus" hidden>
+    <div class="bus-cab">
+      <label class="bus-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Marca, calle o pueblo" autocomplete="off" enterkeyhint="search"></label>
+      <button class="cerrar" id="cerrarBus" aria-label="Cerrar búsqueda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="bus-tit" id="busTit">Toca la estrella para añadirla a tus favoritas</div>
+    <ul class="lista" id="resBus"></ul>
   </div>
 
   <div class="vista" id="vDet" hidden>
@@ -385,12 +408,12 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   // ---------- datos ----------
   const num = s => { if (s == null || s === "") return null; const v = parseFloat(String(s).replace(",", ".")); return isFinite(v) && v > 0 ? v : null; };
   const coord = s => { const v = parseFloat(String(s ?? "").replace(",", ".")); return isFinite(v) ? v : null; };
-  const deCompacto = j => ({ fecha: j.actualizado, est: j.estaciones.map(e => ({ id: String(e[0]), lat: e[1], lon: e[2], A: e[3], P: e[4], dA: e[5], dP: e[6], rot: e[7], dir: e[8], loc: e[9], hor: e[10] })) });
+  const deCompacto = j => ({ fecha: j.actualizado, est: j.estaciones.map(e => ({ id: String(e[0]), lat: e[1], lon: e[2], A: e[3], P: j.v === 2 ? e[4] : null, dA: e[5], dP: j.v === 2 ? e[6] : null, rot: e[7], dir: e[8], loc: e[9], hor: e[10] })) });
   function deApi(j) {
     const est = [];
     for (const e of j.ListaEESSPrecio || []) {
       if (e["Tipo Venta"] && e["Tipo Venta"] !== "P") continue;
-      const A = num(e["Precio Gasoleo A"]), P = num(e["Precio Gasoleo Premium"]);
+      const A = num(e["Precio Gasoleo A"]), P = num(e["Precio Gasolina 95 E5"]);
       if (A == null && P == null) continue;
       est.push({ id: String(e.IDEESS), lat: coord(e.Latitud), lon: coord(e["Longitud (WGS84)"]), A, P, dA: null, dP: null, rot: e["Rótulo"], dir: e["Dirección"], loc: e.Localidad, hor: e.Horario });
     }
@@ -498,7 +521,8 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   function pintarFavs() {
     const el = $("favs");
     const items = st.favs.map(itemPorId).filter(Boolean);
-    if (!items.length) { el.hidden = true; return; }
+    const ADD = `<button class="fav-add" id="favAdd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>${items.length ? "Añadir o quitar favoritas" : "Añadir gasolineras favoritas"}</button>`;
+    if (!items.length) { el.hidden = false; el.innerHTML = ADD; return; }
     const min = st.stats ? st.stats.min : null;
     el.hidden = false;
     el.innerHTML = items.map(x => {
@@ -506,7 +530,44 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       return `<button class="fav" data-id="${esc(x.e.id)}">${ESTRELLA}
         <div style="min-width:0"><div class="n">${esc(nombre(x.marca))}</div><div class="l">${esc(localidad(x.e.loc))} · ${km(x.d)}</div></div>
         <div class="der"><div class="pr" style="color:${x.t === "g" ? "var(--good)" : x.t === "r" ? "var(--bad)" : "var(--ink)"}">${eur(x.p)}</div>${df}</div></button>`;
-    }).join("");
+    }).join("") + ADD;
+  }
+
+  // ---------- buscador de gasolineras (para favoritas a mano) ----------
+  const norm = t => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  function abrirBuscador() {
+    st.sel = null;
+    $("vLista").hidden = true; $("vDet").hidden = true; $("vBus").hidden = false;
+    if (innerWidth < 900) ponerSnap(2);
+    $("q").value = ""; pintarBusqueda();
+    setTimeout(() => { try { $("q").focus(); } catch {} }, 350);
+  }
+  function cerrarBuscador() { $("vBus").hidden = true; $("vLista").hidden = false; ponerSnap(1); }
+  function pintarBusqueda() {
+    const q = norm($("q").value).trim(), tokens = q.split(/\s+/).filter(Boolean);
+    const ref = st.yo || st.centro;
+    let res = [];
+    for (const e of st.est) {
+      if (e.lat == null) continue;
+      if (tokens.length) {
+        const txt = norm(`${e.rot} ${e.dir} ${e.loc} ${localidad(e.loc)}`);
+        if (!tokens.every(t => txt.includes(t))) continue;
+      }
+      res.push({ e, d: dist(ref, [e.lat, e.lon]) });
+    }
+    if (!tokens.length) res = res.filter(x => x.d <= 15);
+    res.sort((a, b) => a.d - b.d); res = res.slice(0, 60);
+    $("busTit").textContent = tokens.length ? `${res.length === 60 ? "Más de 60" : res.length} resultados · toca la estrella para guardarla` : "Cerca de ti · o escribe una marca, calle o pueblo";
+    $("resBus").innerHTML = res.length ? res.map(({ e, d }) => {
+      const m = marca(e.rot), p = e[st.prod], fav = st.favs.includes(e.id);
+      return `<li class="fila b" data-id="${esc(e.id)}">
+        ${monoHtml({ marca: m }, 0)}
+        <div style="min-width:0"><div class="nom">${esc(nombre(m))}</div>
+          <div class="meta"><span class="km">${km(d)}</span><span class="calle">${esc(localidad(e.loc))} · ${esc(tit(e.dir))}</span></div></div>
+        <div class="der"><div class="precio m" style="font-size:19px">${p == null ? "–" : eur(p)}</div></div>
+        <button class="star-t" aria-pressed="${fav}" aria-label="Favorita">${ESTRELLA.replace(' class="st"', "")}</button>
+      </li>`;
+    }).join("") : `<li class="vacio"><b>Sin resultados</b>Prueba con otra marca, calle o pueblo.</li>`;
   }
 
   const deltaHtml = d => d == null ? "" : Math.abs(d) < .0005 ? `<span class="delta i">= ayer</span>` : d < 0 ? `<span class="delta b">▼ ${eur(-d)}</span>` : `<span class="delta s">▲ ${eur(d)}</span>`;
@@ -533,7 +594,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
 
   function pintarCabecera() {
     const s = st.stats;
-    $("mejorEtq").textContent = st.prod === "A" ? "Gasóleo A" : "Gasóleo Premium";
+    $("mejorEtq").textContent = st.prod === "A" ? "Gasóleo A" : "Gasolina 95";
     $("zona").textContent = s ? st.zona : "Sin resultados";
     $("cuantas").textContent = s ? `${st.vis.length} en ${st.radio} km` : "";
     if (!s) {
@@ -594,7 +655,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
         <div style="min-width:0"><h3>${esc(nombre(x.marca))}</h3><div class="dir">${esc(tit(e.dir))}, ${esc(tit(e.loc))}</div></div>
         <div class="det-acc"><button class="estrella" id="favDet" aria-pressed="${st.favs.includes(e.id)}" aria-label="Favorita">${ESTRELLA.replace(' class="st"', "")}</button><button class="cerrar" id="cerrarDet" aria-label="Volver a la lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       </div>
-      <div class="tablero">${tot(st.prod, st.prod === "A" ? "Gasóleo A" : "Gasóleo Premium")}${tot(otro, otro === "A" ? "Gasóleo A" : "Gasóleo Premium")}</div>
+      <div class="tablero">${tot(st.prod, st.prod === "A" ? "Gasóleo A" : "Gasolina 95")}${tot(otro, otro === "A" ? "Gasóleo A" : "Gasolina 95")}</div>
       <div class="hechos">
         <div><div class="cap">Distancia</div><div class="v">${km(x.d)}</div></div>
         <div><div class="cap">Puesto</div><div class="v">${x.rk ? `${x.rk}º <span style="font-size:13px;color:var(--muted)">de ${st.vis.length}</span>` : `<span style="font-size:14px;color:var(--muted)">Fuera del radio</span>`}</div></div>
@@ -685,7 +746,28 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
   // ---------- eventos ----------
   $("lista").addEventListener("click", e => { const f = e.target.closest(".fila"); if (f) abrirDetalle(f.dataset.id, true); });
   $("lista").addEventListener("keydown", e => { if (e.key === "Enter") { const f = e.target.closest(".fila"); if (f) abrirDetalle(f.dataset.id, true); } });
-  $("favs").addEventListener("click", e => { const f = e.target.closest(".fav"); if (f) abrirDetalle(f.dataset.id, true); });
+  $("favs").addEventListener("click", e => {
+    if (e.target.closest("#favAdd")) { abrirBuscador(); return; }
+    const f = e.target.closest(".fav"); if (f) abrirDetalle(f.dataset.id, true);
+  });
+  let tBus; $("q").addEventListener("input", () => { clearTimeout(tBus); tBus = setTimeout(pintarBusqueda, 150); });
+  $("cerrarBus").onclick = cerrarBuscador;
+  $("resBus").addEventListener("click", e => {
+    const f = e.target.closest(".fila"); if (!f) return;
+    const id = f.dataset.id;
+    if (e.target.closest(".star-t")) {
+      const i = st.favs.indexOf(id);
+      if (i >= 0) st.favs.splice(i, 1); else st.favs.push(id);
+      grabar("favs", st.favs);
+      e.target.closest(".star-t").setAttribute("aria-pressed", i < 0);
+      pintarFavs(); pintarPins();
+      toast(i >= 0 ? "Quitada de favoritas" : "Añadida a favoritas", 1400);
+      return;
+    }
+    if (!itemPorId(id)) { toast(st.prod === "A" ? "Esta gasolinera no vende diésel" : "Esta gasolinera no vende gasolina 95"); return; }
+    $("vBus").hidden = true;
+    abrirDetalle(id, true);
+  });
   $("mejor").onclick = () => st.stats && abrirDetalle(st.stats.mejor.e.id, true);
   document.querySelectorAll("[data-radio]").forEach(b => b.onclick = () => { st.radio = +b.dataset.radio; grabar("radio", st.radio); refrescar(true); });
   document.querySelectorAll("[data-orden]").forEach(b => b.onclick = () => { st.orden = b.dataset.orden; grabar("orden", st.orden); refrescar(false); $("lista").scrollTop = 0; });

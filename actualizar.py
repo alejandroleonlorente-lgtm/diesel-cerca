@@ -1,7 +1,7 @@
 """Descarga los precios del Ministerio (MITECO) y genera data/diesel.json.
 
 Se ejecuta solo en GitHub Actions cada hora. Guarda los precios de diésel
-(Gasóleo A y Premium) de todas las gasolineras públicas de España y calcula
+(Gasóleo A) y gasolina 95 E5 de todas las gasolineras públicas de España y calcula
 la variación respecto al último precio del día anterior.
 """
 import json
@@ -15,7 +15,7 @@ URL = ("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/"
        "PreciosCarburantes/EstacionesTerrestres/")
 DATA = Path(__file__).resolve().parent / "data"
 SALIDA = DATA / "diesel.json"
-HISTORICO = DATA / "historico.json"
+HISTORICO = DATA / "historico2.json"  # v2: diésel + gasolina 95
 
 
 def descargar():
@@ -66,7 +66,7 @@ def main():
     for e in datos.get("ListaEESSPrecio", []):
         if e.get("Tipo Venta") and e.get("Tipo Venta") != "P":
             continue  # cooperativas y venta restringida
-        a, p = num(e.get("Precio Gasoleo A")), num(e.get("Precio Gasoleo Premium"))
+        a, p = num(e.get("Precio Gasoleo A")), num(e.get("Precio Gasolina 95 E5"))
         lat, lon = coord(e.get("Latitud")), coord(e.get("Longitud (WGS84)"))
         if (a is None and p is None) or lat is None or lon is None:
             continue
@@ -89,6 +89,7 @@ def main():
 
     DATA.mkdir(exist_ok=True)
     SALIDA.write_text(json.dumps({
+        "v": 2,
         "actualizado": datos.get("Fecha"),
         "estaciones": estaciones,
     }, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
