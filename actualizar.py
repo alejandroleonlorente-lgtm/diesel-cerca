@@ -24,14 +24,18 @@ def descargar():
         "Accept": "application/json",
     })
     ultimo = None
-    for intento in range(4):
+    for intento, espera in enumerate([0, 20, 45, 90, 150]):
+        time.sleep(espera)
         try:
-            with urllib.request.urlopen(req, timeout=90) as r:
+            with urllib.request.urlopen(req, timeout=120) as r:
                 return json.loads(r.read().decode("utf-8-sig"))
         except Exception as e:  # noqa: BLE001
             ultimo = e
-            time.sleep(10 * (intento + 1))
-    raise SystemExit(f"No se pudo descargar la API: {ultimo}")
+            print(f"Intento {intento + 1} fallido: {e}")
+    # La web del Ministerio a veces no responde: se conservan los últimos precios
+    # y el proceso termina sin error; la próxima hora lo vuelve a intentar.
+    print(f"::warning::El Ministerio no responde ({ultimo}). Se mantienen los precios anteriores.")
+    raise SystemExit(0)
 
 
 def num(s):
