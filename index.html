@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Diésel Cerca</title>
+<title>Gasolineras ALL</title>
 <meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Diésel Cerca">
-<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="apple-mobile-web-app-title" content="Gasolineras ALL">
+<link rel="manifest" href="manifest.webmanifest?v=4">
 <link rel="icon" href="icono-192.png?v=3">
 <link rel="apple-touch-icon" href="icono-180.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -244,7 +244,7 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
       <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#fff" fill-rule="evenodd" d="M12 2.8s-4.6 5.3-4.6 9.1a4.6 4.6 0 0 0 9.2 0c0-3.8-4.6-9.1-4.6-9.1zm0 7.3a1.85 1.85 0 1 0 0 3.7 1.85 1.85 0 0 0 0-3.7z"/><circle cx="12" cy="11.95" r="1.35" fill="#2BE39A"/></svg>
     </div>
     <div class="marca-txt">
-      <b id="marcaNom">Diésel Cerca</b>
+      <b id="marcaNom">Gasolineras ALL</b>
       <span id="actualizado">Cargando precios…</span>
     </div>
   </div>
@@ -628,8 +628,6 @@ button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid 
     document.querySelectorAll("[data-orden]").forEach(b => b.setAttribute("aria-pressed", b.dataset.orden === st.orden));
     $("soloAbiertas").setAttribute("aria-pressed", st.abiertas);
     $("deposito").textContent = `Depósito ${st.litros} L`;
-    $("marcaNom").textContent = st.prod === "A" ? "Diésel Cerca" : "Gasolina Cerca";
-    document.title = $("marcaNom").textContent;
     $("pA").setAttribute("aria-pressed", st.prod === "A"); $("pP").setAttribute("aria-pressed", st.prod === "P");
   }
 
